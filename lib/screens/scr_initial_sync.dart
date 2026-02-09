@@ -1,6 +1,10 @@
 ﻿import 'dart:convert';
+import 'dart:io';
+import 'dart:math' as math;
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:kebun_sawit/mvc_dao/dao_reposisi.dart';
 import 'package:kebun_sawit/mvc_services/api_spr.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -131,6 +135,20 @@ class InitialSyncCheckpointStore {
   }
 }
 
+class NetworkQualityResult {
+  const NetworkQualityResult({
+    required this.ok,
+    required this.downloadMbps,
+    required this.latencyMs,
+    required this.message,
+  });
+
+  final bool ok;
+  final double downloadMbps;
+  final int latencyMs;
+  final String message;
+}
+
 
 class InitialSyncPage extends StatefulWidget {
   final Object username;
@@ -149,6 +167,11 @@ class _InitialSyncPageState extends State<InitialSyncPage> {
   late Object blok;
   late Map<InitialSyncStep, InitialStepState> stepStates;
   final _checkpointStore = InitialSyncCheckpointStore();
+  bool _isCheckingNetwork = false;
+  NetworkQualityResult? _networkQuality;
+
+  static const double _minDownloadMbps = 0.5;
+  static const int _maxLatencyMs = 700;
 
   List<InitialSyncStep> get orderedSteps => InitialSyncStep.values;
 
@@ -164,6 +187,14 @@ class _InitialSyncPageState extends State<InitialSyncPage> {
   }
 
   Future<void> _bootstrapSync() async {
+    final networkReady = await _ensureNetworkReady(showSnackBar: false);
+    if (!mounted || !networkReady) {
+      setState(() {
+        currentStep = 'Bandwidth/jaringan tidak memadai untuk proses sinkronisasi';
+      });
+      return;
+    }
+
     final loaded = await _checkpointStore.load();
     if (!mounted) return;
 
@@ -182,6 +213,120 @@ class _InitialSyncPageState extends State<InitialSyncPage> {
     _startSync();
   }
 
+  Future<NetworkQualityResult> _measureNetworkQuality() async {
+    final connectivity = await Connectivity().checkConnectivity();
+    if (connectivity.contains(ConnectivityResult.none)) {
+      return const NetworkQualityResult(
+        ok: false,
+        downloadMbps: 0,
+        latencyMs: 0,
+        message: 'Tidak ada koneksi internet',
+      );
+    }
+
+    int latencyMs;
+    try {
+      final latencyWatch = Stopwatch()..start();
+      await InternetAddress.lookup('google.com').timeout(const Duration(seconds: 3));
+      latencyWatch.stop();
+      latencyMs = latencyWatch.elapsedMilliseconds;
+    } catch (_) {
+      return const NetworkQualityResult(
+        ok: false,
+        downloadMbps: 0,
+        latencyMs: 999,
+        message: 'Jaringan tidak stabil (latensi gagal diukur)',
+      );
+    }
+
+    double downloadMbps = 0;
+    try {
+      final uri = Uri.parse('${ApiSPK.baseUrl}/wfs.jsp?r=apk.task&q=${username.toString()}');
+      final dlWatch = Stopwatch()..start();
+      final response = await http.get(uri).timeout(const Duration(seconds: 8));
+      dlWatch.stop();
+
+      if (response.statusCode >= 400) {
+        return NetworkQualityResult(
+          ok: false,
+          downloadMbps: 0,
+          latencyMs: latencyMs,
+          message: 'Server tidak merespons normal (${response.statusCode})',
+        );
+      }
+
+      final bytes = response.bodyBytes.length;
+      final sec = math.max(dlWatch.elapsedMilliseconds / 1000.0, 0.001);
+      downloadMbps = (bytes * 8) / (sec * 1000 * 1000);
+    } catch (_) {
+      return NetworkQualityResult(
+        ok: false,
+        downloadMbps: 0,
+        latencyMs: latencyMs,
+        message: 'Gagal mengukur bandwidth unduh',
+      );
+    }
+
+    final ok = downloadMbps >= _minDownloadMbps && latencyMs <= _maxLatencyMs;
+    return NetworkQualityResult(
+      ok: ok,
+      downloadMbps: downloadMbps,
+      latencyMs: latencyMs,
+      message: ok
+          ? 'Jaringan memadai untuk sinkronisasi'
+          : 'Bandwidth/jaringan tidak memadai untuk sinkronisasi',
+    );
+  }
+
+  Future<bool> _ensureNetworkReady({required bool showSnackBar}) async {
+    if (!mounted) return false;
+    setState(() => _isCheckingNetwork = true);
+
+    final result = await _measureNetworkQuality();
+    if (!mounted) return false;
+
+    setState(() {
+      _networkQuality = result;
+      _isCheckingNetwork = false;
+    });
+
+    if (result.ok) return true;
+
+    if (showSnackBar && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Bandwidth sedang tidak memadai untuk proses sync'),
+        ),
+      );
+    }
+
+    if (!mounted) return false;
+    final proceed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Jaringan Kurang Stabil'),
+        content: Text(
+          'Kualitas jaringan di bawah rekomendasi.\n'
+          'Download: ${result.downloadMbps.toStringAsFixed(2)} Mbps\n'
+          'Latensi: ${result.latencyMs} ms\n\n'
+          'Lanjutkan sinkronisasi dengan risiko proses lebih lambat/gagal?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Batal'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Lanjutkan'),
+          ),
+        ],
+      ),
+    );
+
+    return proceed == true;
+  }
+
   double _computeProgress() {
     final done = stepStates.values.where((s) => s.done).length;
     return orderedSteps.isEmpty ? 0.0 : done / orderedSteps.length;
@@ -197,6 +342,8 @@ class _InitialSyncPageState extends State<InitialSyncPage> {
 
   Future<void> _startSync({InitialSyncStep? startFrom}) async {
     if (isSyncing) return;
+    final networkReady = await _ensureNetworkReady(showSnackBar: true);
+    if (!networkReady) return;
 
     final startIndex = startFrom == null ? 0 : orderedSteps.indexOf(startFrom);
     setState(() {
@@ -431,22 +578,27 @@ class _InitialSyncPageState extends State<InitialSyncPage> {
             end: Alignment.bottomCenter,
           ),
         ),
-        child: Center(
-          child: Container(
-            width: 360,
-            padding: const EdgeInsets.all(28),
-            decoration: BoxDecoration(
-              color: const Color(0x14FFFFFF),
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0x4D000000),
-                  blurRadius: 20,
-                  offset: Offset(0, 8),
-                ),
-              ],
-            ),
-            child: Column(
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 360),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(28),
+                  decoration: BoxDecoration(
+                    color: const Color(0x14FFFFFF),
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Color(0x4D000000),
+                        blurRadius: 20,
+                        offset: Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 const Text(
@@ -467,6 +619,71 @@ class _InitialSyncPageState extends State<InitialSyncPage> {
                   ),
                 ),
                 const SizedBox(height: 32),
+
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.10),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: Colors.white24),
+                  ),
+                  child: Row(
+                    children: [
+                      if (_isCheckingNetwork)
+                        const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.amber),
+                          ),
+                        )
+                      else
+                        Icon(
+                          (_networkQuality?.ok ?? false) ? Icons.check_circle : Icons.error,
+                          color: (_networkQuality?.ok ?? false)
+                              ? const Color(0xFF8FCE00)
+                              : Colors.redAccent,
+                          size: 18,
+                        ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          _isCheckingNetwork
+                              ? 'Mengecek kualitas jaringan...'
+                              : (_networkQuality?.message ?? 'Kualitas jaringan belum dicek'),
+                          style: const TextStyle(color: Colors.white, fontSize: 12),
+                        ),
+                      ),
+                      if (!_isCheckingNetwork)
+                        TextButton(
+                          onPressed: isSyncing
+                              ? null
+                              : () {
+                                  _ensureNetworkReady(showSnackBar: false);
+                                },
+                          child: const Text(
+                            'CEK',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+                if (_networkQuality != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Download ${_networkQuality!.downloadMbps.toStringAsFixed(2)} Mbps • Latensi ${_networkQuality!.latencyMs} ms '
+                        '(min ${_minDownloadMbps.toStringAsFixed(1)} Mbps, max $_maxLatencyMs ms)',
+                        style: const TextStyle(color: Colors.white70, fontSize: 11),
+                      ),
+                    ),
+                  ),
+                const SizedBox(height: 12),
 
                 // Progress Bar
                 ClipRRect(
@@ -508,42 +725,90 @@ class _InitialSyncPageState extends State<InitialSyncPage> {
                                   ? Icons.error
                                   : Icons.circle_outlined;
                       final color = st.running
-                          ? Colors.amber
+                          ? const Color(0xFF8FCE00)
                           : st.done
-                              ? const Color(0xFF8FCE00)
+                              ? Colors.white38
                               : st.errorMessage != null
                                   ? Colors.redAccent
-                                  : Colors.white38;
+                                  : Colors.white;
+                      final isWaiting = !st.running && !st.done && st.errorMessage == null;
+                      final isHighlighted = st.running || isWaiting;
+                      final rowHighlightColor = st.running
+                          ? const Color(0xFF8FCE00).withValues(alpha: 0.20)
+                          : isWaiting
+                              ? Colors.white.withValues(alpha: 0.12)
+                              : Colors.transparent;
                       final subtitle = st.errorMessage != null
                           ? st.errorMessage!
+                          : st.running
+                              ? 'Sedang proses...'
                           : st.done
                               ? 'Sukses • ${st.count} item'
                               : 'Menunggu';
 
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 4),
-                        child: Row(
-                          children: [
-                            Icon(icon, color: color, size: 18),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    step.label,
-                                    style: const TextStyle(color: Colors.white, fontSize: 13),
-                                  ),
-                                  Text(
-                                    subtitle,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(color: Colors.white70, fontSize: 11),
-                                  ),
-                                ],
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 180),
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: rowHighlightColor,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            children: [
+                              st.running
+                                  ? SizedBox(
+                                      width: 18,
+                                      height: 18,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2.2,
+                                        valueColor: const AlwaysStoppedAnimation<Color>(
+                                          Color(0xFF8FCE00),
+                                        ),
+                                      ),
+                                    )
+                                  : Icon(icon, color: color, size: 18),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      step.label,
+                                      style: TextStyle(
+                                        color: st.running
+                                            ? const Color(0xFFB7F542)
+                                            : isWaiting
+                                                ? Colors.white
+                                            : st.done
+                                                ? Colors.white38
+                                                : Colors.white,
+                                        fontSize: isHighlighted ? 15 : 13,
+                                        fontWeight: isHighlighted ? FontWeight.w700 : FontWeight.w500,
+                                      ),
+                                    ),
+                                    Text(
+                                      subtitle,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        color: st.running
+                                            ? const Color(0xFFA8F02F)
+                                            : isWaiting
+                                                ? Colors.white
+                                            : st.done
+                                                ? Colors.white38
+                                                : Colors.white70,
+                                        fontSize: isHighlighted ? 13 : 11,
+                                        fontWeight: isHighlighted ? FontWeight.w600 : FontWeight.w400,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       );
                     }).toList(),
@@ -642,6 +907,9 @@ class _InitialSyncPageState extends State<InitialSyncPage> {
                   ),
                 ),
               ],
+                  ),
+                ),
+              ),
             ),
           ),
         ),

@@ -51,9 +51,11 @@ class _OptionActScreenState extends State<OptionActScreen> {
           label: 'KOREKSI',
           iconColor: Colors.white,
           circleColor: Colors.amber.shade800,
-          onTap: () {
-            // Aksi saat tombol koreksi ditekan
-          },
+          onTap: cfgNavigator(
+            context: context,
+            action: 'push',
+            routeName: '/reposisi',
+          ),
         ),
 
         // --- Tombol Temuan ---

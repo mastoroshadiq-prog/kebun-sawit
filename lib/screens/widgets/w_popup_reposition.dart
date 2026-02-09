@@ -105,272 +105,197 @@ SingleChildScrollView _buildPopupContent(
   int pohonIndex, {
   bool? isVirtual,
 }) {
+  String? selectedLabel;
+  final options = _buildTreeStatusOptions(pohon, petugas, pohonIndex, isVirtual: isVirtual ?? false);
+
   return SingleChildScrollView(
-    child: Column(
-      children: [
-        const SizedBox(height: 10),
-        // Asumsi resWrapConfig adalah fungsi global
-        cfgWrap(
-          WrapAlignment.center,
-          buildListPropA(
-            context,
-            pohon,
-            petugas,
-            pohonIndex,
-            isVirtual: isVirtual,
+    child: StatefulBuilder(
+      builder: (context, setState) => Column(
+        children: [
+          const SizedBox(height: 10),
+          cfgWrap(
+            WrapAlignment.center,
+            options
+                .map(
+                  (option) => _buildSelectableTreeStatusButton(
+                    label: option.label,
+                    iconPath: option.iconPath,
+                    borderColor: option.borderColor,
+                    isSelected: selectedLabel == option.label,
+                    onTap: () => setState(() => selectedLabel = option.label),
+                  ),
+                )
+                .toList(),
           ),
-        ),
-        const SizedBox(height: 15),
-        cfgWrap(
-          WrapAlignment.center,
-          buildListPropTegak(
-            context,
-            pohon,
-            petugas,
-            pohonIndex,
-            isVirtual: isVirtual,
-          ),
-        ),
-        const SizedBox(height: 15),
-        cfgWrap(
-          WrapAlignment.center,
-          buildListPropC(
-            context,
-            pohon,
-            petugas,
-            pohonIndex,
-            isVirtual: isVirtual,
-          ),
-        ),
-        const SizedBox(height: 20),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            cfgElevatedButton(
-              Colors.blueAccent.shade700,
-              Colors.black,
-              0,
-              0,
-              5.0,
-              cfgPadding(
-                24.0,
-                8.0,
-                resText(
-                  TextAlign.left,
-                  'Simpan',
-                  16,
-                  FontStyle.normal,
-                  true,
-                  Colors.white,
-                ),
+          const SizedBox(height: 16),
+          if (selectedLabel != null)
+            Text(
+              'Pilihan: $selectedLabel',
+              style: TextStyle(
+                color: Colors.green.shade800,
+                fontWeight: FontWeight.w700,
               ),
-              null, //cfgNavigator(context: context, action: 'pop'),
             ),
-            const SizedBox(width: 20),
-            cfgElevatedButton(
-              Colors.green.shade800,
-              Colors.black,
-              0,
-              0,
-              5.0,
-              cfgPadding(
-                24.0,
-                8.0,
-                resText(
-                  TextAlign.left,
-                  'Batal',
-                  16,
-                  FontStyle.normal,
-                  true,
-                  Colors.white,
+          const SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              cfgElevatedButton(
+                Colors.blueAccent.shade700,
+                Colors.black,
+                0,
+                0,
+                5.0,
+                cfgPadding(
+                  24.0,
+                  8.0,
+                  resText(
+                    TextAlign.left,
+                    'Simpan',
+                    16,
+                    FontStyle.normal,
+                    true,
+                    Colors.white,
+                  ),
                 ),
+                () async {
+                  if (selectedLabel == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Pilih status koreksi terlebih dahulu.'),
+                      ),
+                    );
+                    return;
+                  }
+
+                  final confirm = await showDialog<bool>(
+                    context: context,
+                    builder: (dialogContext) => AlertDialog(
+                      title: const Text('Konfirmasi Simpan'),
+                      content: Text('Yakin simpan perubahan "$selectedLabel"?'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(dialogContext, false),
+                          child: const Text('Tidak'),
+                        ),
+                        ElevatedButton(
+                          onPressed: () => Navigator.pop(dialogContext, true),
+                          child: const Text('Ya'),
+                        ),
+                      ],
+                    ),
+                  );
+
+                  if (confirm != true) {
+                    return;
+                  }
+
+                  final selected = options.firstWhere(
+                    (option) => option.label == selectedLabel,
+                  );
+
+                  final result = await _syncPlantReposition(
+                    pohon.blok,
+                    pohonIndex,
+                    selected.label,
+                    pohon.objectId,
+                    pohon.npohon,
+                    pohon.nbaris,
+                    petugas,
+                    selected.isVirtual,
+                  );
+
+                  if (context.mounted) {
+                    Navigator.pop(context, result);
+                  }
+                },
               ),
-              cfgNavigator(context: context, action: 'pop', routeName: '/'),
-            ),
-          ],
-        ),
-      ],
+              const SizedBox(width: 20),
+              cfgElevatedButton(
+                Colors.green.shade800,
+                Colors.black,
+                0,
+                0,
+                5.0,
+                cfgPadding(
+                  24.0,
+                  8.0,
+                  resText(
+                    TextAlign.left,
+                    'Batal',
+                    16,
+                    FontStyle.normal,
+                    true,
+                    Colors.white,
+                  ),
+                ),
+                () => Navigator.pop(context),
+              ),
+            ],
+          ),
+        ],
+      ),
     ),
   );
 }
 
-final ValueNotifier<String> selectedKesehatan = ValueNotifier('G0');
-List<Widget> buildListPropA(
-  BuildContext context,
+List<_TreeStatusOption> _buildTreeStatusOptions(
   Pohon pohon,
   String petugas,
   int pohonIndex, {
-  bool? isVirtual,
-}) => [
-  _buildTreeStatusButton(
-    context,
-    'MIRING\nKIRI',
-    'assets/icons/miring-kiri.png',
-    Colors.purple,
-    pohon.objectId,
-    pohon.npohon,
-    pohon.nbaris,
-    petugas,
-    pohonIndex,
-    pohon.blok,
-    isVirtual: isVirtual ?? false,
-  ),
-  _buildTreeStatusButton(
-    context,
-    'MIRING\nKANAN',
-    'assets/icons/miring-kanan.png',
-    Colors.blue,
-    pohon.objectId,
-    pohon.npohon,
-    pohon.nbaris,
-    petugas,
-    pohonIndex,
-    pohon.blok,
-    isVirtual: isVirtual ?? false,
-  ),
-];
+  required bool isVirtual,
+}) {
+  // parameter tetap dipertahankan untuk kompatibilitas signature pemanggilan
+  // ignore: unused_local_variable
+  final _ = (pohon, petugas, pohonIndex);
 
-List<Widget> buildListPropTegak(
-  BuildContext context,
-  Pohon pohon,
-  String petugas,
-  int pohonIndex, {
-  bool? isVirtual,
-}) => [
-  _buildTreeStatusButton(
-    context,
-    'TEGAK',
-    'assets/icons/normal.png',
-    Colors.green,
-    pohon.objectId,
-    pohon.npohon,
-    pohon.nbaris,
-    petugas,
-    pohonIndex,
-    pohon.blok,
-    isVirtual: isVirtual ?? false,
+  return [
+  _TreeStatusOption(
+    label: 'MIRING\nKIRI',
+    iconPath: 'assets/icons/miring-kiri.png',
+    borderColor: Colors.purple,
+    isVirtual: isVirtual,
   ),
-];
+  _TreeStatusOption(
+    label: 'MIRING\nKANAN',
+    iconPath: 'assets/icons/miring-kanan.png',
+    borderColor: Colors.blue,
+    isVirtual: isVirtual,
+  ),
+  _TreeStatusOption(
+    label: 'TEGAK',
+    iconPath: 'assets/icons/normal.png',
+    borderColor: Colors.green,
+    isVirtual: isVirtual,
+  ),
+  _TreeStatusOption(
+    label: 'KOSONG',
+    iconPath: 'assets/icons/ditebang.png',
+    borderColor: Colors.brown,
+    isVirtual: isVirtual,
+  ),
+  _TreeStatusOption(
+    label: 'KENTHOS',
+    iconPath: 'assets/icons/kenthosan.png',
+    borderColor: Colors.orange,
+    isVirtual: isVirtual,
+  ),
+  ];
+}
 
-List<Widget> buildListPropB(
-  BuildContext context,
-  Pohon pohon,
-  String petugas,
-  int pohonIndex, {
-  bool? isVirtual,
-}) => [
-  _buildTreeStatusButton(
-    context,
-    'Terinfeksi\nGanoderma',
-    'assets/icons/infek-gano.png',
-    Colors.red,
-    pohon.objectId,
-    pohon.npohon,
-    pohon.nbaris,
-    petugas,
-    pohonIndex,
-    pohon.blok,
-    isVirtual: isVirtual ?? false,
-  ),
-  _buildTreeStatusButton(
-    context,
-    'Infek Gano\nKanan',
-    'assets/icons/infek-gano-kanan.png',
-    Colors.red,
-    pohon.objectId,
-    pohon.npohon,
-    pohon.nbaris,
-    petugas,
-    pohonIndex,
-    pohon.blok,
-    isVirtual: isVirtual ?? false,
-  ),
-  _buildTreeStatusButton(
-    context,
-    'Infek Gano\nKiri',
-    'assets/icons/infek-gano-kiri.png',
-    Colors.red,
-    pohon.objectId,
-    pohon.npohon,
-    pohon.nbaris,
-    petugas,
-    pohonIndex,
-    pohon.blok,
-    isVirtual: isVirtual ?? false,
-  ),
-];
-
-List<Widget> buildListPropC(
-  BuildContext context,
-  Pohon pohon,
-  String petugas,
-  int pohonIndex, {
-  bool? isVirtual,
-}) => [
-  _buildTreeStatusButton(
-    context,
-    'KOSONG',
-    'assets/icons/ditebang.png',
-    Colors.brown,
-    pohon.objectId,
-    pohon.npohon,
-    pohon.nbaris,
-    petugas,
-    pohonIndex,
-    pohon.blok,
-    isVirtual: isVirtual ?? false,
-  ),
-  _buildTreeStatusButton(
-    context,
-    'KENTHOS',
-    'assets/icons/kenthosan.png',
-    Colors.orange,
-    pohon.objectId,
-    pohon.npohon,
-    pohon.nbaris,
-    petugas,
-    pohonIndex,
-    pohon.blok,
-    isVirtual: isVirtual ?? false,
-  ),
-  //_buildTreeStatusButton(context, 'Pohon\nMati', 'assets/icons/pohon-mati.png', Colors.black54, pohon, assignment),
-];
-
-Widget _buildTreeStatusButton(
-  BuildContext context,
-  String label,
-  String iconPath,
-  Color borderColor,
-  String objectId,
-  String npohon,
-  String nbaris,
-  String petugas,
-  int pohonIndex,
-  String blok, {
-  bool? isVirtual,
+Widget _buildSelectableTreeStatusButton({
+  required String label,
+  required String iconPath,
+  required Color borderColor,
+  required bool isSelected,
+  required VoidCallback onTap,
 }) {
   return Row(
     mainAxisSize: MainAxisSize.min,
     crossAxisAlignment: CrossAxisAlignment.center,
     children: [
       InkWell(
-        onTap: () async {
-          final result = await _syncPlantReposition(
-            blok,
-            pohonIndex,
-            label,
-            objectId,
-            npohon,
-            nbaris,
-            petugas,
-            isVirtual ?? false,
-          );
-
-          // Check if widget is still mounted before using context
-          if (context.mounted) {
-            Navigator.pop(context, result); // kirim hasil ke grid
-          }
-        },
+        onTap: onTap,
 
         child: Column(
           children: [
@@ -381,7 +306,19 @@ Widget _buildTreeStatusButton(
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: Colors.white,
-                border: Border.all(color: borderColor, width: 2),
+                border: Border.all(
+                  color: isSelected ? Colors.green.shade700 : borderColor,
+                  width: isSelected ? 4 : 2,
+                ),
+                boxShadow: isSelected
+                    ? [
+                        BoxShadow(
+                          color: Colors.green.shade200,
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ]
+                    : null,
               ),
               child: Center(child: cfgImageAsset(iconPath, 60, 60)),
             ),
@@ -399,6 +336,20 @@ Widget _buildTreeStatusButton(
       ),
     ],
   );
+}
+
+class _TreeStatusOption {
+  const _TreeStatusOption({
+    required this.label,
+    required this.iconPath,
+    required this.borderColor,
+    required this.isVirtual,
+  });
+
+  final String label;
+  final String iconPath;
+  final Color borderColor;
+  final bool isVirtual;
 }
 
 Future<ReposisiResult> _syncPlantReposition(

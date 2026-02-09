@@ -14,16 +14,16 @@ class MenuScreen extends StatefulWidget {
 class _MenuScreen extends State<MenuScreen> {
   //late Future<Petugas?> petugas;
   //late Future<List<Assignment>> assignmentFuture;
-  late InformasiUmum infoUmum;
-  late RingkasanAktivitas ringkasan;
-  late List<RekapPekerjaan> listRekapPekerjaan;
-  late KesehatanTanaman kesehatanTanaman;
-  late String catatanLapangan = 'Tidak ada catatan tambahan.';
-  late bool fotoTerlampir = false;
-  late bool dokumentasiVisualTersedia = false;
-  late ValidasiPengesahan validasi;
-  late InformasiSistem infoSistem;
-  late RekapPekerjaan rekapPekerjaan;
+  late final InformasiUmum infoUmum;
+  late final RingkasanAktivitas ringkasan;
+  late final List<RekapPekerjaan> listRekapPekerjaan;
+  late final KesehatanTanaman kesehatanTanaman;
+  String catatanLapangan = 'Tidak ada catatan tambahan.';
+  bool fotoTerlampir = false;
+  bool dokumentasiVisualTersedia = false;
+  late final ValidasiPengesahan validasi;
+  late final InformasiSistem infoSistem;
+  late final RekapPekerjaan rekapPekerjaan;
 
   @override
   void initState() {
@@ -84,176 +84,169 @@ class _MenuScreen extends State<MenuScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final menuItems = _menuItems(context);
+
     return Scaffold(
-      backgroundColor: const Color(0xFFFFFFFF),
-        appBar : cfgAppBar('Menu Utama', Colors.lightGreen.shade900),
-        body: FutureBuilder(
-            future: null,  // AssignmentDao().getAllAssignment(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              }
-
-              if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
-              }
-
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _resMenu(context),
-                  ],
-              );
-            }
-        ),
-      );
-  }
-
-  Card _resMenu(BuildContext context) {
-    return resCardConfigStyle(
-        cfgCenterColumn(
-          children: listAction(context),
-        ),
-        20.0, 20.0,
-        Color(0xFFE8F5E9)
-    );
-  }
-
-  List<Widget> listAction(BuildContext context) {
-    return [
-      const SizedBox(height: 15),
-      rowItems(context),
-      const SizedBox(height: 15),
-      secondRowItems(context),
-      const SizedBox(height: 15),
-      thirdRowItems(context),
-      const SizedBox(height: 100),
-    ];
-  }
-
-  Widget rowItems(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        // --- Tombol 1: Sync (Icon dalam Lingkaran) ---
-        _buildMenuItem(
-          context,
-          icon: Icons.cloud_upload,
-          label: 'SYNC',
-          iconColor: Colors.white,
-          circleColor: Colors.green.shade800, // Warna lingkaran untuk Sync
-          onTap: cfgNavigator(
-            context: context,
-            action: 'push',
-            routeName: '/syncPage',
+      backgroundColor: const Color(0xFFF6F8FB),
+      appBar: AppBar(
+        title: const Text('Menu Utama'),
+        elevation: 0,
+        foregroundColor: Colors.white,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                const Color(0xFF1F6A5A),
+                const Color(0xFF2D8A73),
+              ],
+            ),
           ),
         ),
-
-        // --- Tombol 2: Report (Icon dalam Lingkaran) ---
-        _buildMenuItem(
-          context,
-          icon: Icons.picture_as_pdf,
-          label: 'REPORT',
-          iconColor: Colors.white,
-          circleColor: Colors.lightBlue, // Warna lingkaran untuk Report
-
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => PreviewLaporanPdf(
-                  infoUmum: infoUmum,
-                  ringkasan: ringkasan,
-                  rekapPekerjaan: listRekapPekerjaan,
-                  kesehatanTanaman: kesehatanTanaman,
-                  catatanLapangan: catatanLapangan,
-                  fotoTerlampir: fotoTerlampir,
-                  dokumentasiVisualTersedia: dokumentasiVisualTersedia,
-                  validasi: validasi,
-                  infoSistem: infoSistem,
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [const Color(0xFFF1F7F5), Colors.white],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: const Color(0xFFD6E7E2)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Akses Cepat',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF225A4D),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Pilih fitur untuk sinkronisasi, laporan, dan operasional lapangan.',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: const Color(0xFF4D7A6E),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            Card(
+              elevation: 2,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(18),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(14),
+                child: GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: menuItems.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
+                    childAspectRatio: 0.9,
+                  ),
+                  itemBuilder: (context, index) {
+                    final item = menuItems[index];
+                    return TweenAnimationBuilder<double>(
+                      tween: Tween(begin: 0.92, end: 1),
+                      duration: Duration(milliseconds: 260 + (index * 90)),
+                      curve: Curves.easeOutBack,
+                      builder: (context, value, child) => Opacity(
+                        opacity: value.clamp(0.0, 1.0),
+                        child: Transform.scale(scale: value, child: child),
+                      ),
+                      child: _buildMenuItem(
+                        context,
+                        icon: item.icon,
+                        label: item.label,
+                        iconColor: Colors.white,
+                        circleColor: item.color,
+                        onTap: item.onTap,
+                      ),
+                    );
+                  },
                 ),
               ),
-            );
-          },
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
-  Widget secondRowItems(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        // --- Tombol 1: Sync (Icon dalam Lingkaran) ---
-        _buildMenuItem(
-          context,
-          icon: Icons.sync_alt,
-          label: 'REPOSISI',
-          iconColor: Colors.white,
-          circleColor: Colors.orange.shade800, // Warna lingkaran untuk Sync
-          onTap: cfgNavigator(
-            context: context,
-            action: 'push',
-            routeName: '/reposisi',
-          ),
+  List<_MenuAction> _menuItems(BuildContext context) {
+    return [
+      _MenuAction(
+        icon: Icons.cloud_upload_rounded,
+        label: 'SYNC',
+        color: const Color(0xFF3C8D7A),
+        onTap: cfgNavigator(
+          context: context,
+          action: 'push',
+          routeName: '/syncPage',
         ),
-
-        // --- Tombol 2: Report (Icon dalam Lingkaran) ---
-        _buildMenuItem(
-          context,
-          icon: Icons.assignment,
-          label: 'TASK LIST',
-          iconColor: Colors.white,
-          circleColor: Colors.blue.shade800, // Warna lingkaran untuk Sync
-          onTap: cfgNavigator(
-            context: context,
-            action: 'push',
-            routeName: '/assignments',
-            //arguments: '',
-          ),
+      ),
+      _MenuAction(
+        icon: Icons.picture_as_pdf_rounded,
+        label: 'REPORT',
+        color: const Color(0xFF4E7FA8),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => PreviewLaporanPdf(
+                infoUmum: infoUmum,
+                ringkasan: ringkasan,
+                rekapPekerjaan: listRekapPekerjaan,
+                kesehatanTanaman: kesehatanTanaman,
+                catatanLapangan: catatanLapangan,
+                fotoTerlampir: fotoTerlampir,
+                dokumentasiVisualTersedia: dokumentasiVisualTersedia,
+                validasi: validasi,
+                infoSistem: infoSistem,
+              ),
+            ),
+          );
+        },
+      ),
+      _MenuAction(
+        icon: Icons.assignment_rounded,
+        label: 'TASK LIST',
+        color: const Color(0xFF5B74A8),
+        onTap: cfgNavigator(
+          context: context,
+          action: 'push',
+          routeName: '/assignments',
         ),
-      ],
-    );
-  }
-
-  Widget thirdRowItems(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        // --- Tombol 1: Sync (Icon dalam Lingkaran) ---
-        _buildMenuItem(
-          context,
-          icon: Icons.flash_on,
-          label: 'AKSI',
-          iconColor: Colors.white,
-          circleColor: Colors.red.shade800, // Warna lingkaran untuk Sync
-          onTap: cfgNavigator(
-            context: context,
-            action: 'push',
-            routeName: '/optAct',
-          ),
+      ),
+      _MenuAction(
+        icon: Icons.flash_on_rounded,
+        label: 'AKSI',
+        color: const Color(0xFF8E6A8F),
+        onTap: cfgNavigator(
+          context: context,
+          action: 'push',
+          routeName: '/optAct',
         ),
-
-        // --- Tombol 2: Report (Icon dalam Lingkaran) ---
-        //'/downloadPage'
-        _buildMenuItem(
-          context,
-          icon: Icons.cloud_download,
-          label: 'UNDUH',
-          iconColor: Colors.white,
-          circleColor: Colors.red.shade800, // Warna lingkaran untuk Sync
-          onTap: cfgNavigator(
-            context: context,
-            action: 'push',
-            routeName: '/downloadPage',
-          ),
-        ),
-
-      ],
-    );
+      ),
+    ];
   }
 
   // Helper Widget untuk membuat setiap item menu (Card)
@@ -266,41 +259,55 @@ class _MenuScreen extends State<MenuScreen> {
         required Color circleColor,
       }) {
     return Card(
-      elevation: 4,
+      elevation: 1.5,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15.0),
+        borderRadius: BorderRadius.circular(18.0),
       ),
+      color: const Color(0xFFFBFCFD),
+      shadowColor: Colors.black.withValues(alpha: 0.08),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(15.0),
+        borderRadius: BorderRadius.circular(18.0),
         child: Container(
-          width: 120,
-          height: 140,
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(18),
+            color: Colors.white,
+            border: Border.all(color: const Color(0xFFE8EDF2)),
+          ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               // *** Bagian Ikon di dalam Lingkaran ***
               Container(
-                width: 60,
-                height: 60,
+                width: 66,
+                height: 66,
                 decoration: BoxDecoration(
                   color: circleColor,
                   shape: BoxShape.circle, // Membuat bentuk lingkaran
+                  boxShadow: [
+                    BoxShadow(
+                      color: circleColor.withValues(alpha: 0.22),
+                      blurRadius: 8,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
                 ),
                 child: Icon(
                   icon,
-                  size: 40,
+                  size: 36,
                   color: iconColor, // Warna ikon (misalnya, putih)
                 ),
               ),
               // **************************************
-              const SizedBox(height: 10),
+              const SizedBox(height: 12),
               Text(
                 label,
-                style: const TextStyle(
-                  fontSize: 14,
+                style: TextStyle(
+                  fontSize: 15,
                   fontWeight: FontWeight.bold,
+                  letterSpacing: 0.4,
+                  color: Colors.grey.shade800,
                 ),
               ),
             ],
@@ -309,4 +316,18 @@ class _MenuScreen extends State<MenuScreen> {
       ),
     );
   }
+}
+
+class _MenuAction {
+  _MenuAction({
+    required this.icon,
+    required this.label,
+    required this.color,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final Color color;
+  final VoidCallback onTap;
 }
