@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Konfigurasi untuk production: hanya izinkan HTTPS -->
+    <!-- Jika Anda perlu menggunakan HTTP untuk development/testing, 
+         uncomment bagian cleartextTrafficPermitted di bawah -->
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+    
+    <!-- Uncomment bagian ini jika Anda perlu mengizinkan HTTP untuk domain tertentu -->
+    <!-- 
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">example.com</domain>
+        <domain includeSubdomains="true">localhost</domain>
+        <domain includeSubdomains="true">10.0.2.2</domain>
+    </domain-config>
+    -->
+</network-security-config>

@@ -1,0 +1,652 @@
+﻿import 'dart:convert';
+
+import 'package:flutter/material.dart';
+import 'package:kebun_sawit/mvc_dao/dao_reposisi.dart';
+import 'package:kebun_sawit/mvc_services/api_spr.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../mvc_dao/dao_assignment.dart';
+import '../../mvc_dao/dao_pohon.dart';
+import '../../mvc_services/api_pohon.dart';
+import '../../mvc_services/api_spk.dart';
+import '../../mvc_models/assignment.dart';
+import '../../mvc_models/pohon.dart';
+import '../mvc_dao/dao_spr.dart';
+import '../mvc_models/spr.dart';
+
+enum InitialSyncStep { resetData, spk, kesehatan, tanaman, spr, finalize }
+
+extension InitialSyncStepX on InitialSyncStep {
+  String get label {
+    switch (this) {
+      case InitialSyncStep.resetData:
+        return 'Reset Data Lokal';
+      case InitialSyncStep.spk:
+        return 'Mengambil Data SPK';
+      case InitialSyncStep.kesehatan:
+        return 'Mengambil Riwayat Kesehatan';
+      case InitialSyncStep.tanaman:
+        return 'Mengambil Data Tanaman';
+      case InitialSyncStep.spr:
+        return 'Mengambil Data Stand Per Row';
+      case InitialSyncStep.finalize:
+        return 'Menyimpan data ke perangkat';
+    }
+  }
+}
+
+class InitialStepState {
+  InitialStepState({
+    required this.step,
+    this.count = 0,
+    this.done = false,
+    this.running = false,
+    this.errorMessage,
+    this.startedAt,
+    this.endedAt,
+  });
+
+  final InitialSyncStep step;
+  int count;
+  bool done;
+  bool running;
+  String? errorMessage;
+  DateTime? startedAt;
+  DateTime? endedAt;
+
+  Map<String, dynamic> toJson() => {
+    'count': count,
+    'done': done,
+    'running': running,
+    'errorMessage': errorMessage,
+    'startedAt': startedAt?.toIso8601String(),
+    'endedAt': endedAt?.toIso8601String(),
+  };
+
+  static InitialStepState fromJson(InitialSyncStep step, Map<String, dynamic> json) {
+    return InitialStepState(
+      step: step,
+      count: (json['count'] as num?)?.toInt() ?? 0,
+      done: json['done'] == true,
+      running: false,
+      errorMessage: json['errorMessage'] as String?,
+      startedAt: json['startedAt'] != null
+          ? DateTime.tryParse(json['startedAt'] as String)
+          : null,
+      endedAt: json['endedAt'] != null
+          ? DateTime.tryParse(json['endedAt'] as String)
+          : null,
+    );
+  }
+}
+
+class InitialSyncCheckpointStore {
+  static const _kStateMap = 'init_sync_state_map_v1';
+  static const _kLastFailed = 'init_sync_last_failed_v1';
+  static const _kUpdatedAt = 'init_sync_updated_at_v1';
+
+  Future<void> save(Map<InitialSyncStep, InitialStepState> states) async {
+    final prefs = await SharedPreferences.getInstance();
+    final map = <String, dynamic>{
+      for (final e in states.entries) e.key.name: e.value.toJson(),
+    };
+
+    final failed = states.entries
+        .where((e) => e.value.errorMessage != null && e.value.done == false)
+        .map((e) => e.key.name)
+        .cast<String?>()
+        .firstWhere((e) => e != null, orElse: () => null);
+
+    await prefs.setString(_kStateMap, jsonEncode(map));
+    if (failed != null) {
+      await prefs.setString(_kLastFailed, failed);
+    } else {
+      await prefs.remove(_kLastFailed);
+    }
+    await prefs.setString(_kUpdatedAt, DateTime.now().toIso8601String());
+  }
+
+  Future<Map<InitialSyncStep, InitialStepState>> load() async {
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getString(_kStateMap);
+    if (raw == null || raw.isEmpty) return {};
+
+    final decoded = jsonDecode(raw);
+    if (decoded is! Map<String, dynamic>) return {};
+
+    final result = <InitialSyncStep, InitialStepState>{};
+    for (final step in InitialSyncStep.values) {
+      final node = decoded[step.name];
+      if (node is Map<String, dynamic>) {
+        result[step] = InitialStepState.fromJson(step, node);
+      }
+    }
+    return result;
+  }
+
+  Future<void> clear() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_kStateMap);
+    await prefs.remove(_kLastFailed);
+    await prefs.remove(_kUpdatedAt);
+  }
+}
+
+
+class InitialSyncPage extends StatefulWidget {
+  final Object username;
+  final Object blok;
+  const InitialSyncPage({super.key, required this.username, required this.blok});
+
+  @override
+  State<InitialSyncPage> createState() => _InitialSyncPageState();
+}
+
+class _InitialSyncPageState extends State<InitialSyncPage> {
+  double progress = 0.0;
+  String currentStep = "";
+  bool isSyncing = false;
+  late Object username;
+  late Object blok;
+  late Map<InitialSyncStep, InitialStepState> stepStates;
+  final _checkpointStore = InitialSyncCheckpointStore();
+
+  List<InitialSyncStep> get orderedSteps => InitialSyncStep.values;
+
+  @override
+  void initState() {
+    super.initState();
+    username = widget.username;
+    blok = widget.blok;
+    stepStates = {
+      for (final s in orderedSteps) s: InitialStepState(step: s),
+    };
+    _bootstrapSync();
+  }
+
+  Future<void> _bootstrapSync() async {
+    final loaded = await _checkpointStore.load();
+    if (!mounted) return;
+
+    if (loaded.isNotEmpty) {
+      setState(() {
+        for (final s in orderedSteps) {
+          stepStates[s] = loaded[s] ?? InitialStepState(step: s);
+        }
+        progress = _computeProgress();
+        final failed = _firstFailedStep();
+        currentStep = failed != null ? 'Gagal di ${failed.label}' : 'Siap melanjutkan sinkronisasi';
+      });
+      return;
+    }
+
+    _startSync();
+  }
+
+  double _computeProgress() {
+    final done = stepStates.values.where((s) => s.done).length;
+    return orderedSteps.isEmpty ? 0.0 : done / orderedSteps.length;
+  }
+
+  InitialSyncStep? _firstFailedStep() {
+    for (final step in orderedSteps) {
+      final st = stepStates[step];
+      if (st != null && st.done == false && st.errorMessage != null) return step;
+    }
+    return null;
+  }
+
+  Future<void> _startSync({InitialSyncStep? startFrom}) async {
+    if (isSyncing) return;
+
+    final startIndex = startFrom == null ? 0 : orderedSteps.indexOf(startFrom);
+    setState(() {
+      isSyncing = true;
+      for (int i = startIndex; i < orderedSteps.length; i++) {
+        final step = orderedSteps[i];
+        final state = stepStates[step]!;
+        state.done = false;
+        state.running = false;
+        state.count = 0;
+        state.errorMessage = null;
+        state.startedAt = null;
+        state.endedAt = null;
+      }
+      progress = _computeProgress();
+    });
+
+    for (int i = startIndex; i < orderedSteps.length; i++) {
+      final step = orderedSteps[i];
+      final state = stepStates[step]!;
+
+      setState(() {
+        currentStep = step.label;
+        state.running = true;
+        state.startedAt = DateTime.now();
+        state.errorMessage = null;
+      });
+
+      try {
+        final count = await _runActionByStep(step);
+        setState(() {
+          state.running = false;
+          state.done = true;
+          state.count = count;
+          state.endedAt = DateTime.now();
+          progress = _computeProgress();
+          currentStep = 'Selesai: ${step.label}';
+        });
+      } catch (e) {
+        setState(() {
+          state.running = false;
+          state.done = false;
+          state.errorMessage = e.toString();
+          state.endedAt = DateTime.now();
+          currentStep = 'Gagal: ${step.label}';
+          progress = _computeProgress();
+        });
+        await _checkpointStore.save(stepStates);
+        if (!mounted) return;
+        setState(() => isSyncing = false);
+        return;
+      }
+
+      await _checkpointStore.save(stepStates);
+    }
+
+    await _checkpointStore.clear();
+    if (!mounted) return;
+    setState(() => isSyncing = false);
+    Navigator.pushReplacementNamed(context, "/menu");
+  }
+
+  Future<int> _runActionByStep(InitialSyncStep step) async {
+    switch (step) {
+      case InitialSyncStep.resetData:
+        await _deleteALL();
+        return 0;
+      case InitialSyncStep.spk:
+        return _syncSPK();
+      case InitialSyncStep.kesehatan:
+        return _syncKesehatan();
+      case InitialSyncStep.tanaman:
+        return _syncTanaman();
+      case InitialSyncStep.spr:
+        return _syncSPRBlok();
+      case InitialSyncStep.finalize:
+        await Future.delayed(const Duration(milliseconds: 200));
+        return 0;
+    }
+  }
+
+  Future<void> _deleteALL() async {
+    try {
+      // Hapus semua data petugas
+      //await PetugasDao().deleteAllWorkers();
+
+      // Hapus semua data assignment
+      await AssignmentDao().deleteAllAssignments();
+
+      // Panggil fungsi pengecekan
+      int unsyncedCount = await ReposisiDao().countUnsyncedReposisi();
+      if (unsyncedCount == 0) {
+        // Jika sudah 0, eksekusi hapus
+        // Hapus semua data pohon
+        await PohonDao().deleteAllPohon();
+        debugPrint("Data pohon berhasil dibersihkan.");
+      } else {
+        // Jika masih ada data, berikan peringatan
+        debugPrint("Gagal menghapus: Masih ada $unsyncedCount data reposisi yang belum sinkron.");
+      }
+
+      //await PohonDao().deleteAllPohon();
+      await SPRDao().deleteAll();
+
+      //print("Semua data berhasil dihapus.");
+    } catch (e) {
+      //print("Gagal menghapus data: $e");
+    }
+  }
+
+  // ---------------------------------------------------------
+  // STEP 1 â€” Ambil & Simpan SPK
+  // ---------------------------------------------------------
+  Future<int> _syncSPK() async {
+    final result = await ApiSPK.getTask(username.toString());
+
+    if (!result['success']) {
+      throw Exception("API SPK gagal: ${result['message']}");
+    }
+
+    final data = result['data'];
+    final List<Assignment> assignments = (data as List).map<Assignment>((item) {
+      return Assignment(
+        id: item['id_task'],
+        spkNumber: item['nomor_spk'],
+        taskName: item['nama_task'],
+        estate: item['estate'],
+        division: item['divisi'],
+        block: item['lokasi'],
+        rowNumber: item['nbaris'],
+        treeNumber: item['n_pokok'],
+        petugas: username.toString(),
+      );
+    }).toList();
+
+
+    final inserted = await AssignmentDao().insertAssignmentsBatch(assignments);
+    if (inserted <= 0) throw Exception("Insert SPK gagal");
+    return assignments.length;
+  }
+
+  // ---------------------------------------------------------
+  // STEP 2 â€” Ambil & simpan Riwayat Kesehatan (contoh dummy)
+  // ---------------------------------------------------------
+  Future<int> _syncKesehatan() async {
+    // Nanti ganti dengan API kesehatan
+    await Future.delayed(const Duration(milliseconds: 300));
+    return 0;
+  }
+
+  // ---------------------------------------------------------
+  // STEP 3 â€” Ambil & simpan Data Tanaman (contoh dummy)
+  // ---------------------------------------------------------
+  Future<int> _syncTanaman() async {
+    // API tanaman
+    int unsyncedCount = await ReposisiDao().countUnsyncedReposisi();
+    if (unsyncedCount == 0) {
+      final result = await ApiPohon.getSpkPohon(username.toString());
+
+      if (!result['success']) {
+        throw Exception("API Pohon gagal: ${result['message']}");
+      }
+
+      final data = result['data'];
+      final List<Pohon> pohons = (data as List).map<Pohon>((item) {
+        return Pohon(
+          blok: item['blok'],
+          nbaris: item['nbaris'],
+          npohon: item['npohon'],
+          objectId: item['objectId'],
+          status: item['status'],
+          nflag: item['nflag'],
+        );
+      }).toList();
+
+      final inserted = await PohonDao().insertPohonBatch(pohons);
+      if (inserted <= 0) throw Exception("Insert POHON gagal");
+      return pohons.length;
+    } else {
+      // Jika masih ada data, berikan peringatan
+      debugPrint("Masih ada $unsyncedCount data reposisi yang belum sinkron.");
+      return 0;
+    }
+
+    //await Future.delayed(const Duration(milliseconds: 300));
+  }
+
+  // ---------------------------------------------------------
+  // STEP 4 â€” Ambil & Simpan Data Stand Per Row
+  // ---------------------------------------------------------
+  Future<int> _syncSPRBlok() async {
+    final result = await ApiSPR.getSprBlok(blok.toString());
+
+    if (!result['success']) {
+      throw Exception("API SPR gagal: ${result['message']}");
+    }
+
+    final data = result['data'];
+    final List<SPR> spr = (data as List).map<SPR>((item) {
+      return SPR(
+        idSPR: item['id_spr'],
+        blok: item['blok'],
+        nbaris: item['nbaris'],
+        sprAwal: item['spr_awal'],
+        sprAkhir: item['spr_akhir'],
+        keterangan: '-',
+        petugas: username.toString(),
+        flag: 0,
+      );
+    }).toList();
+
+    final inserted = await SPRDao().insertSPRBatch(spr);
+    if (inserted <= 0) throw Exception("Insert SPR gagal");
+    return spr.length;
+  }
+
+  // ---------------------------------------------------------
+  // UI
+  // ---------------------------------------------------------
+  @override
+  Widget build(BuildContext context) {
+    final failedStep = _firstFailedStep();
+
+    return Scaffold(
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF1B3C2E), Color(0xFF2E5A3B)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: Center(
+          child: Container(
+            width: 360,
+            padding: const EdgeInsets.all(28),
+            decoration: BoxDecoration(
+              color: const Color(0x14FFFFFF),
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0x4D000000),
+                  blurRadius: 20,
+                  offset: Offset(0, 8),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  "Sinkronisasi Data",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 22,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  "Menyiapkan data awal untuk aktivitas lapangan",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white70,
+                    fontSize: 14,
+                  ),
+                ),
+                const SizedBox(height: 32),
+
+                // Progress Bar
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: LinearProgressIndicator(
+                    value: progress,
+                    minHeight: 10,
+                    backgroundColor: const Color(0x26FFFFFF),
+                    valueColor: const AlwaysStoppedAnimation(Color(0xFF8FCE00)),
+                  ),
+                ),
+
+                const SizedBox(height: 14),
+                Row(
+                  children: [
+                    Text(
+                      '${(progress * 100).toInt()}%',
+                      style: const TextStyle(color: Colors.white70, fontSize: 12),
+                    ),
+                    const Spacer(),
+                    Text(
+                      '${stepStates.values.where((e) => e.done).length}/${orderedSteps.length} step',
+                      style: const TextStyle(color: Colors.white70, fontSize: 12),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  child: Column(
+                    children: orderedSteps.map((step) {
+                      final st = stepStates[step]!;
+                      final icon = st.running
+                          ? Icons.sync
+                          : st.done
+                              ? Icons.check_circle
+                              : st.errorMessage != null
+                                  ? Icons.error
+                                  : Icons.circle_outlined;
+                      final color = st.running
+                          ? Colors.amber
+                          : st.done
+                              ? const Color(0xFF8FCE00)
+                              : st.errorMessage != null
+                                  ? Colors.redAccent
+                                  : Colors.white38;
+                      final subtitle = st.errorMessage != null
+                          ? st.errorMessage!
+                          : st.done
+                              ? 'Sukses • ${st.count} item'
+                              : 'Menunggu';
+
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: Row(
+                          children: [
+                            Icon(icon, color: color, size: 18),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    step.label,
+                                    style: const TextStyle(color: Colors.white, fontSize: 13),
+                                  ),
+                                  Text(
+                                    subtitle,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(color: Colors.white70, fontSize: 11),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+
+                const SizedBox(height: 24),
+                Text(
+                  currentStep,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                if (!isSyncing && failedStep != null)
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () => _startSync(startFrom: failedStep),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            side: const BorderSide(color: Colors.white54),
+                          ),
+                          child: const Text('ULANG STEP GAGAL'),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () async {
+                            final selected = await showDialog<InitialSyncStep>(
+                              context: context,
+                              builder: (ctx) => AlertDialog(
+                                title: const Text('Mulai dari step'),
+                                content: SizedBox(
+                                  width: double.maxFinite,
+                                  child: ListView(
+                                    shrinkWrap: true,
+                                    children: orderedSteps
+                                        .map(
+                                          (s) => ListTile(
+                                            title: Text(s.label),
+                                            onTap: () => Navigator.pop(ctx, s),
+                                          ),
+                                        )
+                                        .toList(),
+                                  ),
+                                ),
+                              ),
+                            );
+
+                            if (selected != null) {
+                              _startSync(startFrom: selected);
+                            }
+                          },
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            side: const BorderSide(color: Colors.white54),
+                          ),
+                          child: const Text('PILIH STEP'),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                if (!isSyncing)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          await _checkpointStore.clear();
+                          for (final s in orderedSteps) {
+                            stepStates[s] = InitialStepState(step: s);
+                          }
+                          setState(() {
+                            progress = 0;
+                            currentStep = 'Mengulang sinkronisasi dari awal';
+                          });
+                          _startSync();
+                        },
+                        child: const Text('ULANG SEMUA'),
+                      ),
+                    ),
+                  ),
+
+                const SizedBox(height: 16),
+                const Text(
+                  "Jangan tutup aplikasi selama proses berlangsung",
+                  style: TextStyle(
+                    color: Colors.white60,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
