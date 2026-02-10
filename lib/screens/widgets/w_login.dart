@@ -177,19 +177,27 @@ ElevatedButton tombolLogin(
         return;
       }
 
-      showDialog<void>(
-        context: context,
-        barrierDismissible: false,
-        builder: (_) => const Center(child: CircularProgressIndicator()),
-      );
+      final messenger = ScaffoldMessenger.of(context);
+      messenger
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          const SnackBar(
+            content: Text('Memproses login...'),
+            duration: Duration(seconds: 2),
+          ),
+        );
 
       try {
-        await DBHelper()
-            .cleanDatabaseAfterLogin()
-            .timeout(const Duration(seconds: 12));
-
-        // 🌐 1. Panggil API untuk login
-        final result = await ApiAuth.login(username, password);
+        final result = await Future.any<Map<String, dynamic>>([
+          ApiAuth.login(username, password),
+          Future<Map<String, dynamic>>.delayed(
+            const Duration(seconds: 20),
+            () => {
+              'success': false,
+              'message': 'Login timeout, silakan coba lagi',
+            },
+          ),
+        ]);
         if (!context.mounted) return;
 
         if (result['success']) {
@@ -206,11 +214,16 @@ ElevatedButton tombolLogin(
             divisi: data['divisi'],
           );
 
-          // 3. Simpan ke SQLite via DAO
+          // 3. Bersihkan data kerja lama hanya setelah login valid
+          await DBHelper()
+              .cleanDatabaseAfterLogin()
+              .timeout(const Duration(seconds: 12));
+
+          // 4. Simpan ke SQLite via DAO
           final hasil = await PetugasDao().insertPetugas(petugas);
           if (!context.mounted) return;
 
-          // 4. Navigate ke halaman Sync
+          // 5. Navigate ke halaman Sync
           if (hasil > 0) {
             Navigator.pushReplacementNamed(
               context,
@@ -220,33 +233,29 @@ ElevatedButton tombolLogin(
             return;
           }
 
-          ScaffoldMessenger.of(context).showSnackBar(
+          messenger.showSnackBar(
             const SnackBar(content: Text("Gagal menyimpan data user lokal")),
           );
           return;
         }
 
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(result['message'])));
+        messenger.showSnackBar(SnackBar(content: Text(result['message'])));
       } on TimeoutException {
         if (!context.mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
+        messenger.showSnackBar(
           const SnackBar(
             content: Text('Proses login terlalu lama, periksa jaringan lalu coba lagi'),
           ),
         );
       } catch (_) {
         if (!context.mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
+        messenger.showSnackBar(
           const SnackBar(
             content: Text('Terjadi kendala saat login, silakan coba ulang'),
           ),
         );
       } finally {
-        if (context.mounted) {
-          Navigator.of(context, rootNavigator: true).pop();
-        }
+        messenger.hideCurrentSnackBar();
       }
     },
     style: ElevatedButton.styleFrom(
