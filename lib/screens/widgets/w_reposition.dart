@@ -352,6 +352,7 @@ Widget _buildTreeButton(
   String labelPohon = '${pohonIndex + 1}/${nomor.toString()}';
   String iconPath = 'assets/icons/normal.png';
   Color color = Colors.green.shade50; // default
+  Color borderColor = Colors.green.shade400;
 
   if (pohon.nflag == '0') {
     iconPath = 'assets/icons/normal.png';
@@ -364,13 +365,21 @@ Widget _buildTreeButton(
   } else if (pohon.nflag == '4') {
     iconPath = 'assets/icons/ditebang.png';
   } else if (pohon.nflag == '5') {
-    iconPath = 'assets/icons/palm-green-G1.png';
+    iconPath = 'assets/icons/infek-gano.png';
+    color = Colors.red.shade50;
+    borderColor = Colors.red.shade500;
   } else if (pohon.nflag == '6') {
-    iconPath = 'assets/icons/palm-yellow-G2.png';
+    iconPath = 'assets/icons/infek-gano.png';
+    color = Colors.red.shade50;
+    borderColor = Colors.red.shade500;
   } else if (pohon.nflag == '7') {
-    iconPath = 'assets/icons/palm-red-G3.png';
+    iconPath = 'assets/icons/infek-gano.png';
+    color = Colors.red.shade50;
+    borderColor = Colors.red.shade500;
   } else if (pohon.nflag == '8') {
-    iconPath = 'assets/icons/palm-white-G4.png';
+    iconPath = 'assets/icons/infek-gano.png';
+    color = Colors.red.shade50;
+    borderColor = Colors.red.shade500;
   } else if (pohon.nflag == '9') {
     iconPath = 'assets/icons/kosong.png';
   }
@@ -404,7 +413,7 @@ Widget _buildTreeButton(
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: color,
-              border: Border.all(color: Colors.green.shade400, width: 3),
+              border: Border.all(color: borderColor, width: 3),
             ),
             child: Center(child: cfgImageAsset(iconPath, iconSize, iconSize)),
           ),
