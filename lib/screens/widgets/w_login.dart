@@ -156,132 +156,150 @@ List<Widget> listChildren(
   ];
 }
 
-ElevatedButton tombolLogin(
+Widget tombolLogin(
   BuildContext context,
   String routeName,
   TextEditingController usernameController,
   TextEditingController passwordController,
 ) {
-  //final db = await DBHelper().instance.database;
-  return ElevatedButton(
-    onPressed: () async {
-      final username = usernameController.text.trim();
-      final password = passwordController.text.trim();
+  var isSubmitting = false;
+  return StatefulBuilder(
+    builder: (context, setButtonState) {
 
-      // print('{$username}, {$password}');
+      return ElevatedButton(
+        onPressed: isSubmitting
+            ? null
+            : () async {
+                setButtonState(() => isSubmitting = true);
+                final username = usernameController.text.trim();
+                final password = passwordController.text.trim();
 
-      if (username.isEmpty || password.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Username dan Password wajib diisi")),
-        );
-        return;
-      }
+                if (username.isEmpty || password.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Username dan Password wajib diisi")),
+                  );
+                  setButtonState(() => isSubmitting = false);
+                  return;
+                }
 
-      final messenger = ScaffoldMessenger.of(context);
-      messenger
-        ..hideCurrentSnackBar()
-        ..showSnackBar(
-          const SnackBar(
-            content: Text('Memproses login...'),
-            duration: Duration(seconds: 2),
+                final messenger = ScaffoldMessenger.of(context);
+                messenger
+                  ..hideCurrentSnackBar()
+                  ..showSnackBar(
+                    const SnackBar(
+                      content: Text('Memproses login...'),
+                      duration: Duration(seconds: 30),
+                    ),
+                  );
+
+                try {
+                  final result = await Future.any<Map<String, dynamic>>([
+                    ApiAuth.login(username, password),
+                    Future<Map<String, dynamic>>.delayed(
+                      const Duration(seconds: 20),
+                      () => {
+                        'success': false,
+                        'message': 'Login timeout, silakan coba lagi',
+                      },
+                    ),
+                  ]);
+                  if (!context.mounted) return;
+
+                  if (result['success']) {
+                    final data = result['data'];
+
+                    final petugas = Petugas(
+                      akun: username,
+                      nama: data['nama'],
+                      kontak: data['id_pihak'],
+                      peran: data['tipe'],
+                      lastSync: '',
+                      blok: data['blok'],
+                      divisi: data['divisi'],
+                    );
+
+                    await DBHelper()
+                        .cleanDatabaseAfterLogin()
+                        .timeout(const Duration(seconds: 12));
+
+                    final hasil = await PetugasDao().insertPetugas(petugas);
+                    if (!context.mounted) return;
+
+                    if (hasil > 0) {
+                      messenger.hideCurrentSnackBar();
+                      Navigator.pushReplacementNamed(
+                        context,
+                        routeName,
+                        arguments: {'username': username, 'blok': petugas.blok},
+                      );
+                      return;
+                    }
+
+                    messenger.hideCurrentSnackBar();
+                    messenger.showSnackBar(
+                      const SnackBar(content: Text("Gagal menyimpan data user lokal")),
+                    );
+                  } else {
+                    messenger.hideCurrentSnackBar();
+                    messenger.showSnackBar(SnackBar(content: Text(result['message'])));
+                  }
+                } on TimeoutException {
+                  if (!context.mounted) return;
+                  messenger.hideCurrentSnackBar();
+                  messenger.showSnackBar(
+                    const SnackBar(
+                      content: Text('Proses login terlalu lama, periksa jaringan lalu coba lagi'),
+                    ),
+                  );
+                } catch (_) {
+                  if (!context.mounted) return;
+                  messenger.hideCurrentSnackBar();
+                  messenger.showSnackBar(
+                    const SnackBar(
+                      content: Text('Terjadi kendala saat login, silakan coba ulang'),
+                    ),
+                  );
+                } finally {
+                  if (context.mounted) {
+                    setButtonState(() => isSubmitting = false);
+                  }
+                }
+              },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFF388E3C),
+          foregroundColor: Colors.white,
+          minimumSize: const Size(double.infinity, 55),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
           ),
-        );
-
-      try {
-        final result = await Future.any<Map<String, dynamic>>([
-          ApiAuth.login(username, password),
-          Future<Map<String, dynamic>>.delayed(
-            const Duration(seconds: 20),
-            () => {
-              'success': false,
-              'message': 'Login timeout, silakan coba lagi',
-            },
-          ),
-        ]);
-        if (!context.mounted) return;
-
-        if (result['success']) {
-          final data = result['data'];
-
-          // 2. Buat objek Petugas
-          final petugas = Petugas(
-            akun: username,
-            nama: data['nama'],
-            kontak: data['id_pihak'],
-            peran: data['tipe'],
-            lastSync: '',
-            blok: data['blok'],
-            divisi: data['divisi'],
-          );
-
-          // 3. Bersihkan data kerja lama hanya setelah login valid
-          await DBHelper()
-              .cleanDatabaseAfterLogin()
-              .timeout(const Duration(seconds: 12));
-
-          // 4. Simpan ke SQLite via DAO
-          final hasil = await PetugasDao().insertPetugas(petugas);
-          if (!context.mounted) return;
-
-          // 5. Navigate ke halaman Sync
-          if (hasil > 0) {
-            Navigator.pushReplacementNamed(
-              context,
-              routeName,
-              arguments: {'username': username, 'blok': petugas.blok},
-            );
-            return;
-          }
-
-          messenger.showSnackBar(
-            const SnackBar(content: Text("Gagal menyimpan data user lokal")),
-          );
-          return;
-        }
-
-        messenger.showSnackBar(SnackBar(content: Text(result['message'])));
-      } on TimeoutException {
-        if (!context.mounted) return;
-        messenger.showSnackBar(
-          const SnackBar(
-            content: Text('Proses login terlalu lama, periksa jaringan lalu coba lagi'),
-          ),
-        );
-      } catch (_) {
-        if (!context.mounted) return;
-        messenger.showSnackBar(
-          const SnackBar(
-            content: Text('Terjadi kendala saat login, silakan coba ulang'),
-          ),
-        );
-      } finally {
-        messenger.hideCurrentSnackBar();
-      }
-    },
-    style: ElevatedButton.styleFrom(
-      backgroundColor: const Color(0xFF388E3C), // Hijau Sedang
-      foregroundColor: Colors.white,
-      minimumSize: const Size(double.infinity, 55), // Tombol lebih besar
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15), // Sudut tombol membulat
-      ),
-      elevation: 8, // Sedikit bayangan untuk tombol
-    ),
-    child: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: const [
-        Text(
-          'MASUK',
-          style: TextStyle(
-            fontSize: 19,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 1.5,
-          ),
+          elevation: 8,
         ),
-        SizedBox(width: 8),
-        Icon(Icons.chevron_right, size: 35),
-      ],
-    ),
+        child: isSubmitting
+            ? const SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2.5,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              )
+            : Row(
+                mainAxisSize: MainAxisSize.min,
+                children: const [
+                  Text(
+                    'MASUK',
+                    style: TextStyle(
+                      fontSize: 19,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.5,
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  Icon(Icons.chevron_right, size: 35),
+                ],
+              ),
+      );
+    },
   );
 }
 

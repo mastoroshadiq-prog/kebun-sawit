@@ -151,6 +151,13 @@ class GeoAuditService {
       );
       final ok = res.statusCode >= 200 && res.statusCode < 300;
       if (!ok) {
+        final isDuplicatePrimaryKey =
+            res.statusCode == 409 && res.body.contains('23505');
+        if (isDuplicatePrimaryKey) {
+          // Event sudah pernah masuk ke server; anggap sukses agar tidak retry tanpa akhir.
+          _lastPostError = null;
+          return true;
+        }
         _lastPostError = 'HTTP ${res.statusCode}: ${res.body}';
         debugPrint('GeoAuditService POST gagal => $_lastPostError');
       } else {

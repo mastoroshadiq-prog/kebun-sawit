@@ -292,13 +292,7 @@ class _InitialSyncPageState extends State<InitialSyncPage> {
 
     if (result.ok) return true;
 
-    if (showSnackBar && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Bandwidth sedang tidak memadai untuk proses sync'),
-        ),
-      );
-    }
+    // Snackbar warning bandwidth dinonaktifkan sesuai kebutuhan UX terbaru.
 
     // Sesuai kebijakan baru: hanya warning, proses sync tetap lanjut tanpa konfirmasi.
     return true;
@@ -404,25 +398,25 @@ class _InitialSyncPageState extends State<InitialSyncPage> {
 
   Future<void> _deleteALL() async {
     try {
+      // Cek dulu data lokal yang belum tersinkron sebelum menghapus apapun.
+      final unsyncedCount = await ReposisiDao().countUnsyncedReposisi();
+      if (unsyncedCount > 0) {
+        debugPrint(
+          "Lewati reset data: masih ada $unsyncedCount data reposisi belum sinkron.",
+        );
+        return;
+      }
+
       // Hapus semua data petugas
       //await PetugasDao().deleteAllWorkers();
 
       // Hapus semua data assignment
       await AssignmentDao().deleteAllAssignments();
 
-      // Panggil fungsi pengecekan
-      int unsyncedCount = await ReposisiDao().countUnsyncedReposisi();
-      if (unsyncedCount == 0) {
-        // Jika sudah 0, eksekusi hapus
-        // Hapus semua data pohon
-        await PohonDao().deleteAllPohon();
-        debugPrint("Data pohon berhasil dibersihkan.");
-      } else {
-        // Jika masih ada data, berikan peringatan
-        debugPrint("Gagal menghapus: Masih ada $unsyncedCount data reposisi yang belum sinkron.");
-      }
+      // Hapus semua data pohon
+      await PohonDao().deleteAllPohon();
+      debugPrint("Data pohon berhasil dibersihkan.");
 
-      //await PohonDao().deleteAllPohon();
       await SPRDao().deleteAll();
 
       //print("Semua data berhasil dihapus.");
@@ -635,26 +629,18 @@ class _InitialSyncPageState extends State<InitialSyncPage> {
                         child: Text(
                           _isCheckingNetwork
                               ? 'Mengecek kualitas jaringan...'
-                              : (_networkQuality?.message ?? 'Kualitas jaringan belum dicek'),
-                          style: const TextStyle(
-                            color: Colors.white,
+                              : ((_networkQuality?.ok ?? false)
+                                  ? (_networkQuality?.message ?? 'Jaringan memadai untuk sinkronisasi')
+                                  : 'Perhatian Bandwidth kurang memadai untuk tahapan Sync'),
+                          style: TextStyle(
+                            color: (_networkQuality?.ok ?? false)
+                                ? Colors.white
+                                : Colors.redAccent,
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
-                      if (!_isCheckingNetwork)
-                        TextButton(
-                          onPressed: isSyncing
-                              ? null
-                              : () {
-                                  _ensureNetworkReady(showSnackBar: false);
-                                },
-                          child: const Text(
-                            'CEK',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
                     ],
                   ),
                 ),

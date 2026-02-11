@@ -1,0 +1,291 @@
+{
+  "tables": {
+    "apk.audit_log->apk.audit_log": {
+      "status": "success",
+      "started_at": "2026-02-11T08:15:59.375265+00:00",
+      "finished_at": "2026-02-11T08:15:59.539467+00:00",
+      "rows": 60,
+      "error": null
+    },
+    "dbo.atribut_pihak->dbo.atribut_pihak": {
+      "status": "success",
+      "started_at": "2026-02-11T08:15:59.541386+00:00",
+      "finished_at": "2026-02-11T08:15:59.648287+00:00",
+      "rows": 0,
+      "error": null
+    },
+    "dbo.kebun_n_pokok->dbo.kebun_n_pokok": {
+      "status": "success",
+      "started_at": "2026-02-11T08:15:59.650119+00:00",
+      "finished_at": "2026-02-11T08:16:00.358557+00:00",
+      "rows": 3500,
+      "error": null
+    },
+    "dbo.kebun_observasi->dbo.kebun_observasi": {
+      "status": "success",
+      "started_at": "2026-02-11T08:16:00.360260+00:00",
+      "finished_at": "2026-02-11T08:16:00.520378+00:00",
+      "rows": 5,
+      "error": null
+    },
+    "dbo.kesehatan_pohon->dbo.kesehatan_pohon": {
+      "status": "success",
+      "started_at": "2026-02-11T08:16:00.520838+00:00",
+      "finished_at": "2026-02-11T08:16:00.623631+00:00",
+      "rows": 0,
+      "error": null
+    },
+    "dbo.master_ancak->dbo.master_ancak": {
+      "status": "success",
+      "started_at": "2026-02-11T08:16:00.624092+00:00",
+      "finished_at": "2026-02-11T08:16:00.754753+00:00",
+      "rows": 27,
+      "error": null
+    },
+    "dbo.master_lahan->dbo.master_lahan": {
+      "status": "success",
+      "started_at": "2026-02-11T08:16:00.755173+00:00",
+      "finished_at": "2026-02-11T08:16:00.920478+00:00",
+      "rows": 70,
+      "error": null
+    },
+    "dbo.master_lahan_tipe->dbo.master_lahan_tipe": {
+      "status": "success",
+      "started_at": "2026-02-11T08:16:00.921128+00:00",
+      "finished_at": "2026-02-11T08:16:01.076657+00:00",
+      "rows": 5,
+      "error": null
+    },
+    "dbo.master_pihak->dbo.master_pihak": {
+      "status": "success",
+      "started_at": "2026-02-11T08:16:01.078501+00:00",
+      "finished_at": "2026-02-11T08:16:01.243568+00:00",
+      "rows": 4,
+      "error": null
+    },
+    "dbo.master_standar_vegetasi->dbo.master_standar_vegetasi": {
+      "status": "success",
+      "started_at": "2026-02-11T08:16:01.244834+00:00",
+      "finished_at": "2026-02-11T08:16:01.448779+00:00",
+      "rows": 16,
+      "error": null
+    },
+    "dbo.ops_eksekusi_tindakan->dbo.ops_eksekusi_tindakan": {
+      "status": "success",
+      "started_at": "2026-02-11T08:16:01.449504+00:00",
+      "finished_at": "2026-02-11T08:16:01.586512+00:00",
+      "rows": 0,
+      "error": null
+    },
+    "dbo.ops_fase_besar->dbo.ops_fase_besar": {
+      "status": "success",
+      "started_at": "2026-02-11T08:16:01.587520+00:00",
+      "finished_at": "2026-02-11T08:16:01.724359+00:00",
+      "rows": 9,
+      "error": null
+    },
+    "dbo.ops_jadwal_tindakan->dbo.ops_jadwal_tindakan": {
+      "status": "success",
+      "started_at": "2026-02-11T08:16:01.726008+00:00",
+      "finished_at": "2026-02-11T08:16:01.890985+00:00",
+      "rows": 140,
+      "error": null
+    },
+    "dbo.ops_spk_tindakan->dbo.ops_spk_tindakan": {
+      "status": "success",
+      "started_at": "2026-02-11T08:16:01.893109+00:00",
+      "finished_at": "2026-02-11T08:16:02.065229+00:00",
+      "rows": 144,
+      "error": null
+    },
+    "dbo.ops_sub_tindakan->dbo.ops_sub_tindakan": {
+      "status": "success",
+      "started_at": "2026-02-11T08:16:02.067251+00:00",
+      "finished_at": "2026-02-11T08:16:02.241740+00:00",
+      "rows": 16,
+      "error": null
+    }
+  },
+  "views": {
+    "apk.v_apk_assignment->apk.v_apk_assignment": {
+      "status": "failed",
+      "started_at": "2026-02-11T08:44:04.099179+00:00",
+      "finished_at": "2026-02-11T08:44:04.864876+00:00",
+      "error": "missing dependencies: dbo.v_assignment"
+    },
+    "apk.v_apk_petugas->apk.v_apk_petugas": {
+      "status": "failed",
+      "started_at": "2026-02-11T08:44:04.128850+00:00",
+      "finished_at": "2026-02-11T08:44:04.865508+00:00",
+      "error": "missing dependencies: apk.v_petugas_lahan"
+    },
+    "apk.v_apk_pihak->apk.v_apk_pihak": {
+      "status": "success",
+      "started_at": "2026-02-11T08:21:28.486261+00:00",
+      "finished_at": "2026-02-11T08:21:28.626080+00:00",
+      "error": null
+    },
+    "apk.v_apk_pohon->apk.v_apk_pohon": {
+      "status": "success",
+      "started_at": "2026-02-11T08:35:52.803160+00:00",
+      "finished_at": "2026-02-11T08:35:52.920778+00:00",
+      "error": null
+    },
+    "apk.v_n_baris->apk.v_n_baris": {
+      "status": "failed",
+      "started_at": "2026-02-11T08:44:04.155974+00:00",
+      "finished_at": "2026-02-11T08:44:04.866009+00:00",
+      "error": "missing dependencies: apk.v_apk_assignment"
+    },
+    "apk.v_new_nbaris->apk.v_new_nbaris": {
+      "status": "failed",
+      "started_at": "2026-02-11T08:44:04.184691+00:00",
+      "finished_at": "2026-02-11T08:44:04.866472+00:00",
+      "error": "missing dependencies: apk.v_n_baris"
+    },
+    "apk.v_petugas_lahan->apk.v_petugas_lahan": {
+      "status": "failed",
+      "started_at": "2026-02-11T08:44:04.212944+00:00",
+      "finished_at": "2026-02-11T08:44:04.866876+00:00",
+      "error": "missing dependencies: dbo.petugas_lahan"
+    },
+    "apk.v_pohon_terkini->apk.v_pohon_terkini": {
+      "status": "failed",
+      "started_at": "2026-02-11T08:44:04.240755+00:00",
+      "finished_at": "2026-02-11T08:44:04.867316+00:00",
+      "error": "missing dependencies: apk.v_pohon_terkini_"
+    },
+    "apk.v_pohon_terkini_->apk.v_pohon_terkini_": {
+      "status": "failed",
+      "started_at": "2026-02-11T08:44:04.268182+00:00",
+      "finished_at": "2026-02-11T08:44:04.867742+00:00",
+      "error": "missing dependencies: apk.v_spk_pohon, dbo.v_reposisi_terkini"
+    },
+    "apk.v_ref_code->apk.v_ref_code": {
+      "status": "failed",
+      "started_at": "2026-02-11T08:44:04.296730+00:00",
+      "finished_at": "2026-02-11T08:44:04.868148+00:00",
+      "error": "missing dependencies: dbo.ref_code"
+    },
+    "apk.v_simulasi_pohon->apk.v_simulasi_pohon": {
+      "status": "failed",
+      "started_at": "2026-02-11T08:44:04.324800+00:00",
+      "finished_at": "2026-02-11T08:44:04.868585+00:00",
+      "error": "missing dependencies: apk.v_spk_pohon, dbo.vsim_reposisi_terkini"
+    },
+    "apk.v_spk_pohon->apk.v_spk_pohon": {
+      "status": "failed",
+      "started_at": "2026-02-11T08:44:04.352867+00:00",
+      "finished_at": "2026-02-11T08:44:04.869042+00:00",
+      "error": "missing dependencies: dbo.petugas_lahan"
+    },
+    "apk.v_spk_pohon_i->apk.v_spk_pohon_i": {
+      "status": "failed",
+      "started_at": "2026-02-11T08:44:04.381406+00:00",
+      "finished_at": "2026-02-11T08:44:04.869459+00:00",
+      "error": "missing dependencies: apk.v_new_nbaris"
+    },
+    "dbo.v_assignment->dbo.v_assignment": {
+      "status": "failed",
+      "started_at": "2026-02-11T08:44:04.409438+00:00",
+      "finished_at": "2026-02-11T08:44:04.526915+00:00",
+      "error": "column c.nama_sub does not exist\nLINE 2: b.id_tanaman, c.nama_sub AS nama_task, \n                      ^\n"
+    },
+    "dbo.v_baris_blok->dbo.v_baris_blok": {
+      "status": "success",
+      "started_at": "2026-02-11T08:26:00.933348+00:00",
+      "finished_at": "2026-02-11T08:26:01.044866+00:00",
+      "error": null
+    },
+    "dbo.v_max_reposisi->dbo.v_max_reposisi": {
+      "status": "failed",
+      "started_at": "2026-02-11T08:44:04.527572+00:00",
+      "finished_at": "2026-02-11T08:44:04.869861+00:00",
+      "error": "missing dependencies: dbo.reposisi_pohon"
+    },
+    "dbo.v_max_spr->dbo.v_max_spr": {
+      "status": "failed",
+      "started_at": "2026-02-11T08:44:04.579323+00:00",
+      "finished_at": "2026-02-11T08:44:04.870303+00:00",
+      "error": "missing dependencies: dbo.stand_per_row"
+    },
+    "dbo.v_pohon->dbo.v_pohon": {
+      "status": "success",
+      "started_at": "2026-02-11T08:26:01.264590+00:00",
+      "finished_at": "2026-02-11T08:26:01.374124+00:00",
+      "error": null
+    },
+    "dbo.v_pohon_tambahan->dbo.v_pohon_tambahan": {
+      "status": "failed",
+      "started_at": "2026-02-11T08:44:04.609351+00:00",
+      "finished_at": "2026-02-11T08:44:04.870720+00:00",
+      "error": "missing dependencies: dbo.reposisi_pohon"
+    },
+    "dbo.v_pohon_terkini->dbo.v_pohon_terkini": {
+      "status": "failed",
+      "started_at": "2026-02-11T08:44:04.637041+00:00",
+      "finished_at": "2026-02-11T08:44:04.871173+00:00",
+      "error": "missing dependencies: dbo.reposisi_pohon"
+    },
+    "dbo.v_reposisi_terkini->dbo.v_reposisi_terkini": {
+      "status": "failed",
+      "started_at": "2026-02-11T08:44:04.665545+00:00",
+      "finished_at": "2026-02-11T08:44:04.871606+00:00",
+      "error": "missing dependencies: dbo.reposisi_pohon, dbo.v_max_reposisi"
+    },
+    "dbo.v_spr_terkini->dbo.v_spr_terkini": {
+      "status": "failed",
+      "started_at": "2026-02-11T08:44:04.693051+00:00",
+      "finished_at": "2026-02-11T08:44:04.872113+00:00",
+      "error": "missing dependencies: dbo.v_spr_tgl_terkini"
+    },
+    "dbo.v_spr_tgl_terkini->dbo.v_spr_tgl_terkini": {
+      "status": "failed",
+      "started_at": "2026-02-11T08:44:04.721627+00:00",
+      "finished_at": "2026-02-11T08:44:04.872553+00:00",
+      "error": "missing dependencies: dbo.stand_per_row, dbo.v_max_spr"
+    },
+    "dbo.vc_baris_blok->dbo.vc_baris_blok": {
+      "status": "success",
+      "started_at": "2026-02-11T08:26:01.914756+00:00",
+      "finished_at": "2026-02-11T08:26:02.022841+00:00",
+      "error": null
+    },
+    "dbo.vc_spr->dbo.vc_spr": {
+      "status": "success",
+      "started_at": "2026-02-11T08:21:30.759613+00:00",
+      "finished_at": "2026-02-11T08:21:30.861093+00:00",
+      "error": null
+    },
+    "dbo.vsim_max_reposisi->dbo.vsim_max_reposisi": {
+      "status": "failed",
+      "started_at": "2026-02-11T08:44:04.752143+00:00",
+      "finished_at": "2026-02-11T08:44:04.873059+00:00",
+      "error": "missing dependencies: dbo.reposisi_pohon"
+    },
+    "dbo.vsim_pohon_tambahan->dbo.vsim_pohon_tambahan": {
+      "status": "failed",
+      "started_at": "2026-02-11T08:44:04.779184+00:00",
+      "finished_at": "2026-02-11T08:44:04.873514+00:00",
+      "error": "missing dependencies: dbo.reposisi_pohon"
+    },
+    "dbo.vsim_reposisi_terkini->dbo.vsim_reposisi_terkini": {
+      "status": "failed",
+      "started_at": "2026-02-11T08:44:04.807233+00:00",
+      "finished_at": "2026-02-11T08:44:04.873933+00:00",
+      "error": "missing dependencies: dbo.reposisi_pohon, dbo.vsim_max_reposisi"
+    },
+    "web.v_web_pihak->web.v_web_pihak": {
+      "status": "success",
+      "started_at": "2026-02-11T08:21:31.170546+00:00",
+      "finished_at": "2026-02-11T08:21:31.275483+00:00",
+      "error": null
+    },
+    "web.vw_pohon_terkini->web.vw_pohon_terkini": {
+      "status": "failed",
+      "started_at": "2026-02-11T08:44:04.836239+00:00",
+      "finished_at": "2026-02-11T08:44:04.874494+00:00",
+      "error": "missing dependencies: dbo.v_pohon_terkini"
+    }
+  }
+}

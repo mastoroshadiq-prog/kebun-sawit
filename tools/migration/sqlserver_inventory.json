@@ -1,0 +1,3027 @@
+{
+  "apk": {
+    "audit_log": {
+      "primary_key_indexes": [
+        "plant_pk_audit_log"
+      ],
+      "primary_key_columns": [
+        "id_audit"
+      ],
+      "columns": [
+        {
+          "ordinal": 1,
+          "name": "id_audit",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 2,
+          "name": "user_id",
+          "type": "nvarchar",
+          "max_length": 200,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 3,
+          "name": "action",
+          "type": "nvarchar",
+          "max_length": 200,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 4,
+          "name": "detail",
+          "type": "nvarchar",
+          "max_length": 510,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 5,
+          "name": "log_date",
+          "type": "datetime",
+          "max_length": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 6,
+          "name": "device",
+          "type": "nvarchar",
+          "max_length": 400,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        }
+      ]
+    }
+  },
+  "dbo": {
+    "atribut_pihak": {
+      "primary_key_indexes": [
+        "plant_pk_atribut_pihak"
+      ],
+      "primary_key_columns": [
+        "id_atribut"
+      ],
+      "columns": [
+        {
+          "ordinal": 1,
+          "name": "id_atribut",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 2,
+          "name": "kode_pihak",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 3,
+          "name": "kode_atr",
+          "type": "nvarchar",
+          "max_length": 60,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 4,
+          "name": "disp_atr",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 5,
+          "name": "nilai",
+          "type": "nvarchar",
+          "max_length": 200,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 6,
+          "name": "seq",
+          "type": "int",
+          "max_length": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 7,
+          "name": "kategori",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        }
+      ]
+    },
+    "kebun_n_pokok": {
+      "primary_key_indexes": [
+        "pk__rnpokok"
+      ],
+      "primary_key_columns": [
+        "id_npokok"
+      ],
+      "columns": [
+        {
+          "ordinal": 1,
+          "name": "id_npokok",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 2,
+          "name": "id_tanaman",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 3,
+          "name": "id_tipe",
+          "type": "nvarchar",
+          "max_length": 20,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 4,
+          "name": "n_baris",
+          "type": "int",
+          "max_length": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 5,
+          "name": "n_pokok",
+          "type": "int",
+          "max_length": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 6,
+          "name": "tgl_tanam",
+          "type": "date",
+          "max_length": 3,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 7,
+          "name": "petugas",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 8,
+          "name": "from_date",
+          "type": "datetime",
+          "max_length": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 9,
+          "name": "thru_date",
+          "type": "datetime",
+          "max_length": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 10,
+          "name": "catatan",
+          "type": "nvarchar",
+          "max_length": -1,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 11,
+          "name": "kode",
+          "type": "nvarchar",
+          "max_length": 20,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        }
+      ]
+    },
+    "kebun_observasi": {
+      "primary_key_indexes": [
+        "pk__observasi"
+      ],
+      "primary_key_columns": [
+        "id_observasi"
+      ],
+      "columns": [
+        {
+          "ordinal": 1,
+          "name": "id_observasi",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 2,
+          "name": "id_tanaman",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 3,
+          "name": "id_ancak",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 4,
+          "name": "ndre",
+          "type": "decimal",
+          "max_length": 9,
+          "precision": 15,
+          "scale": 11,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 5,
+          "name": "ndvi",
+          "type": "decimal",
+          "max_length": 9,
+          "precision": 15,
+          "scale": 11,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 6,
+          "name": "evi",
+          "type": "decimal",
+          "max_length": 9,
+          "precision": 15,
+          "scale": 11,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 7,
+          "name": "gndvi",
+          "type": "decimal",
+          "max_length": 9,
+          "precision": 15,
+          "scale": 11,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 8,
+          "name": "tanggal",
+          "type": "datetime",
+          "max_length": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 9,
+          "name": "petugas",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        }
+      ]
+    },
+    "kesehatan_pohon": {
+      "primary_key_indexes": [
+        "pk_kesehatan_pohon"
+      ],
+      "primary_key_columns": [
+        "id_kesehatan"
+      ],
+      "columns": [
+        {
+          "ordinal": 1,
+          "name": "id_kesehatan",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 2,
+          "name": "id_tanaman",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 3,
+          "name": "status_awal",
+          "type": "int",
+          "max_length": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 4,
+          "name": "status_akhir",
+          "type": "int",
+          "max_length": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 5,
+          "name": "kode_status",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 6,
+          "name": "keterangan",
+          "type": "nvarchar",
+          "max_length": 200,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 7,
+          "name": "petugas",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 8,
+          "name": "from_date",
+          "type": "datetime",
+          "max_length": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 9,
+          "name": "thru_date",
+          "type": "datetime",
+          "max_length": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 10,
+          "name": "jenis",
+          "type": "nvarchar",
+          "max_length": 40,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        }
+      ]
+    },
+    "master_ancak": {
+      "primary_key_indexes": [
+        "pk__ancak"
+      ],
+      "primary_key_columns": [
+        "id_ancak"
+      ],
+      "columns": [
+        {
+          "ordinal": 1,
+          "name": "id_ancak",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 2,
+          "name": "kode_ancak",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 3,
+          "name": "nama_ancak",
+          "type": "nvarchar",
+          "max_length": 300,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 4,
+          "name": "kode_blok",
+          "type": "varchar",
+          "max_length": 10,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 5,
+          "name": "n_awal",
+          "type": "int",
+          "max_length": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 6,
+          "name": "n_akhir",
+          "type": "int",
+          "max_length": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 7,
+          "name": "n_baris",
+          "type": "int",
+          "max_length": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 8,
+          "name": "keterangan",
+          "type": "nvarchar",
+          "max_length": 200,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 9,
+          "name": "from_date",
+          "type": "datetime",
+          "max_length": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 10,
+          "name": "thru_date",
+          "type": "datetime",
+          "max_length": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 11,
+          "name": "petugas",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        }
+      ]
+    },
+    "master_lahan": {
+      "primary_key_indexes": [
+        "master_lahan_pk"
+      ],
+      "primary_key_columns": [
+        "id_lahan"
+      ],
+      "columns": [
+        {
+          "ordinal": 1,
+          "name": "id_lahan",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 2,
+          "name": "nama_lahan",
+          "type": "nvarchar",
+          "max_length": 200,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 3,
+          "name": "kode_tipe",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 4,
+          "name": "kode_induk",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 5,
+          "name": "nilai",
+          "type": "decimal",
+          "max_length": 9,
+          "precision": 10,
+          "scale": 2,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 6,
+          "name": "satuan",
+          "type": "nvarchar",
+          "max_length": 40,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 8,
+          "name": "keterangan",
+          "type": "varchar",
+          "max_length": 255,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        }
+      ]
+    },
+    "master_lahan_tipe": {
+      "primary_key_indexes": [
+        "pk_plant_tipe_lahan"
+      ],
+      "primary_key_columns": [
+        "kode_tipe"
+      ],
+      "columns": [
+        {
+          "ordinal": 1,
+          "name": "kode_tipe",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 2,
+          "name": "nama_tipe",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 3,
+          "name": "deskripsi",
+          "type": "nvarchar",
+          "max_length": 510,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        }
+      ]
+    },
+    "master_pihak": {
+      "primary_key_indexes": [
+        "pk_plant_pihak"
+      ],
+      "primary_key_columns": [
+        "id_pihak"
+      ],
+      "columns": [
+        {
+          "ordinal": 1,
+          "name": "id_pihak",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 2,
+          "name": "tipe",
+          "type": "nvarchar",
+          "max_length": 20,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 3,
+          "name": "nama",
+          "type": "nvarchar",
+          "max_length": 300,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 4,
+          "name": "kode_unik",
+          "type": "nvarchar",
+          "max_length": 200,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 5,
+          "name": "id_induk",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 6,
+          "name": "alias",
+          "type": "nvarchar",
+          "max_length": 300,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 7,
+          "name": "id_unik",
+          "type": "nvarchar",
+          "max_length": 200,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 8,
+          "name": "jenis_id",
+          "type": "nvarchar",
+          "max_length": 200,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        }
+      ]
+    },
+    "master_standar_vegetasi": {
+      "primary_key_indexes": [
+        "pk_vegetasi"
+      ],
+      "primary_key_columns": [
+        "id_standar"
+      ],
+      "columns": [
+        {
+          "ordinal": 1,
+          "name": "id_standar",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 2,
+          "name": "nama_indeks",
+          "type": "nvarchar",
+          "max_length": 20,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 3,
+          "name": "kode_kelas",
+          "type": "nvarchar",
+          "max_length": 20,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 4,
+          "name": "nama_kelas",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 5,
+          "name": "deskripsi",
+          "type": "nvarchar",
+          "max_length": 510,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 6,
+          "name": "indeks_min",
+          "type": "decimal",
+          "max_length": 5,
+          "precision": 5,
+          "scale": 3,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 7,
+          "name": "indeks_max",
+          "type": "decimal",
+          "max_length": 5,
+          "precision": 5,
+          "scale": 3,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 8,
+          "name": "saran_aksi",
+          "type": "nvarchar",
+          "max_length": 510,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 9,
+          "name": "from_date",
+          "type": "datetime",
+          "max_length": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 10,
+          "name": "thru_date",
+          "type": "datetime",
+          "max_length": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "identity": false
+        }
+      ]
+    },
+    "ops_eksekusi_tindakan": {
+      "primary_key_indexes": [
+        "plant_pk_eksekusi_tindakan"
+      ],
+      "primary_key_columns": [
+        "id_eksekusi_tindakan"
+      ],
+      "columns": [
+        {
+          "ordinal": 1,
+          "name": "id_eksekusi_tindakan",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 2,
+          "name": "id_jadwal_tindakan",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 3,
+          "name": "tanggal_eksekusi",
+          "type": "date",
+          "max_length": 3,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 4,
+          "name": "hasil",
+          "type": "nvarchar",
+          "max_length": 510,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 5,
+          "name": "petugas",
+          "type": "nvarchar",
+          "max_length": 200,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 6,
+          "name": "catatan",
+          "type": "nvarchar",
+          "max_length": 510,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 7,
+          "name": "created_at",
+          "type": "datetime",
+          "max_length": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 8,
+          "name": "updated_at",
+          "type": "datetime",
+          "max_length": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 9,
+          "name": "id_spk",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        }
+      ]
+    },
+    "ops_fase_besar": {
+      "primary_key_indexes": [
+        "plant_pk_fase_besar"
+      ],
+      "primary_key_columns": [
+        "id_fase_besar"
+      ],
+      "columns": [
+        {
+          "ordinal": 1,
+          "name": "id_fase_besar",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 2,
+          "name": "nama_fase",
+          "type": "nvarchar",
+          "max_length": 200,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 3,
+          "name": "umur_mulai",
+          "type": "int",
+          "max_length": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 4,
+          "name": "umur_selesai",
+          "type": "int",
+          "max_length": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 5,
+          "name": "deskripsi",
+          "type": "nvarchar",
+          "max_length": 510,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 6,
+          "name": "created_at",
+          "type": "datetime",
+          "max_length": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 7,
+          "name": "updated_at",
+          "type": "datetime",
+          "max_length": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "identity": false
+        }
+      ]
+    },
+    "ops_jadwal_tindakan": {
+      "primary_key_indexes": [
+        "plant_pk_jadwal_tindakan"
+      ],
+      "primary_key_columns": [
+        "id_jadwal_tindakan"
+      ],
+      "columns": [
+        {
+          "ordinal": 1,
+          "name": "id_jadwal_tindakan",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 2,
+          "name": "id_tanaman",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 3,
+          "name": "id_sub_tindakan",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 4,
+          "name": "frekuensi",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 5,
+          "name": "interval_hari",
+          "type": "int",
+          "max_length": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 6,
+          "name": "tanggal_mulai",
+          "type": "datetime",
+          "max_length": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 7,
+          "name": "tanggal_selesai",
+          "type": "date",
+          "max_length": 3,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 8,
+          "name": "created_at",
+          "type": "datetime",
+          "max_length": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 9,
+          "name": "updated_at",
+          "type": "datetime",
+          "max_length": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "identity": false
+        }
+      ]
+    },
+    "ops_spk_tindakan": {
+      "primary_key_indexes": [
+        "plant_pk_spk_tindakan"
+      ],
+      "primary_key_columns": [
+        "id_spk"
+      ],
+      "columns": [
+        {
+          "ordinal": 1,
+          "name": "id_spk",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 2,
+          "name": "id_jadwal_tindakan",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 3,
+          "name": "nomor_spk",
+          "type": "nvarchar",
+          "max_length": 200,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 4,
+          "name": "tanggal_terbit",
+          "type": "date",
+          "max_length": 3,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 5,
+          "name": "tanggal_mulai",
+          "type": "date",
+          "max_length": 3,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 6,
+          "name": "tanggal_selesai",
+          "type": "date",
+          "max_length": 3,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 7,
+          "name": "status",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 8,
+          "name": "penanggung_jawab",
+          "type": "nvarchar",
+          "max_length": 200,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 9,
+          "name": "mandor",
+          "type": "nvarchar",
+          "max_length": 200,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 10,
+          "name": "lokasi",
+          "type": "nvarchar",
+          "max_length": 510,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 11,
+          "name": "uraian_pekerjaan",
+          "type": "nvarchar",
+          "max_length": 510,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 12,
+          "name": "catatan",
+          "type": "nvarchar",
+          "max_length": 510,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 13,
+          "name": "created_at",
+          "type": "datetime",
+          "max_length": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 14,
+          "name": "updated_at",
+          "type": "datetime",
+          "max_length": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "identity": false
+        }
+      ]
+    },
+    "ops_sub_tindakan": {
+      "primary_key_indexes": [
+        "plant_pk_sub_tindakan"
+      ],
+      "primary_key_columns": [
+        "id_sub_tindakan"
+      ],
+      "columns": [
+        {
+          "ordinal": 1,
+          "name": "id_sub_tindakan",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 2,
+          "name": "id_fase_besar",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 3,
+          "name": "nama_sub",
+          "type": "nvarchar",
+          "max_length": 200,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 4,
+          "name": "deskripsi",
+          "type": "nvarchar",
+          "max_length": 510,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 5,
+          "name": "created_at",
+          "type": "datetime",
+          "max_length": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 6,
+          "name": "updated_at",
+          "type": "datetime",
+          "max_length": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "identity": false
+        }
+      ]
+    },
+    "petugas_lahan": {
+      "primary_key_indexes": [
+        "plant_pk_petugas_lahan"
+      ],
+      "primary_key_columns": [
+        "id_penugasan"
+      ],
+      "columns": [
+        {
+          "ordinal": 1,
+          "name": "id_penugasan",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 2,
+          "name": "id_petugas",
+          "type": "nvarchar",
+          "max_length": 200,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 3,
+          "name": "jenis_lahan",
+          "type": "nvarchar",
+          "max_length": 200,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 4,
+          "name": "kode_lahan",
+          "type": "nvarchar",
+          "max_length": 200,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 5,
+          "name": "tanggal_mulai",
+          "type": "datetime",
+          "max_length": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 6,
+          "name": "tanggal_selesai",
+          "type": "date",
+          "max_length": 3,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        }
+      ]
+    },
+    "pihak_peran": {
+      "primary_key_indexes": [
+        "plant_pk_pihak_peran"
+      ],
+      "primary_key_columns": [
+        "kode_pihak",
+        "tipe_peran"
+      ],
+      "columns": [
+        {
+          "ordinal": 1,
+          "name": "kode_pihak",
+          "type": "nvarchar",
+          "max_length": 200,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 2,
+          "name": "tipe_peran",
+          "type": "nvarchar",
+          "max_length": 60,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 3,
+          "name": "from_date",
+          "type": "datetime",
+          "max_length": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 4,
+          "name": "from_by",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 5,
+          "name": "thru_date",
+          "type": "datetime",
+          "max_length": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 6,
+          "name": "thru_by",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        }
+      ]
+    },
+    "pihak_posisi": {
+      "primary_key_indexes": [
+        "plant_pk_pihak_posisi"
+      ],
+      "primary_key_columns": [
+        "id_posisi"
+      ],
+      "columns": [
+        {
+          "ordinal": 1,
+          "name": "id_posisi",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 2,
+          "name": "kode_org",
+          "type": "nvarchar",
+          "max_length": 200,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 3,
+          "name": "kode_tipe",
+          "type": "nvarchar",
+          "max_length": 30,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 4,
+          "name": "gaji",
+          "type": "nvarchar",
+          "max_length": 2,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 5,
+          "name": "exempt",
+          "type": "nvarchar",
+          "max_length": 2,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 6,
+          "name": "fulltime",
+          "type": "nvarchar",
+          "max_length": 2,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 7,
+          "name": "temporary",
+          "type": "nvarchar",
+          "max_length": 2,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 8,
+          "name": "est_from",
+          "type": "datetime",
+          "max_length": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 9,
+          "name": "est_thru",
+          "type": "datetime",
+          "max_length": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 10,
+          "name": "act_from",
+          "type": "datetime",
+          "max_length": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 11,
+          "name": "act_thru",
+          "type": "datetime",
+          "max_length": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 12,
+          "name": "id_bdg",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 13,
+          "name": "bdg_item",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 14,
+          "name": "bdg_rev_seq",
+          "type": "numeric",
+          "max_length": 9,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        }
+      ]
+    },
+    "pihak_relasi": {
+      "primary_key_indexes": [
+        "plant_pk_pihak_relasi"
+      ],
+      "primary_key_columns": [
+        "id_relasi"
+      ],
+      "columns": [
+        {
+          "ordinal": 1,
+          "name": "id_relasi",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 2,
+          "name": "pihak_i",
+          "type": "nvarchar",
+          "max_length": 200,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 3,
+          "name": "peran_i",
+          "type": "nvarchar",
+          "max_length": 60,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 4,
+          "name": "pihak_ii",
+          "type": "nvarchar",
+          "max_length": 200,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 5,
+          "name": "peran_ii",
+          "type": "nvarchar",
+          "max_length": 60,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 6,
+          "name": "kode_relasi",
+          "type": "nvarchar",
+          "max_length": 60,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 7,
+          "name": "status_relasi",
+          "type": "varchar",
+          "max_length": 30,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 8,
+          "name": "keterangan",
+          "type": "nvarchar",
+          "max_length": 510,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 9,
+          "name": "grup",
+          "type": "nvarchar",
+          "max_length": 60,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 10,
+          "name": "from_date",
+          "type": "datetime",
+          "max_length": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 11,
+          "name": "from_by",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 12,
+          "name": "thru_date",
+          "type": "datetime",
+          "max_length": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 13,
+          "name": "thru_by",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        }
+      ]
+    },
+    "pihak_tipe_peran": {
+      "primary_key_indexes": [
+        "plant_pk_tipe_peran"
+      ],
+      "primary_key_columns": [
+        "kode_tipe"
+      ],
+      "columns": [
+        {
+          "ordinal": 1,
+          "name": "kode_tipe",
+          "type": "nvarchar",
+          "max_length": 60,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 2,
+          "name": "keterangan",
+          "type": "nvarchar",
+          "max_length": 200,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 3,
+          "name": "id_pemilik",
+          "type": "nvarchar",
+          "max_length": 200,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 4,
+          "name": "kategori",
+          "type": "nvarchar",
+          "max_length": 60,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 5,
+          "name": "seq",
+          "type": "int",
+          "max_length": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 6,
+          "name": "tipe_pihak",
+          "type": "nvarchar",
+          "max_length": 60,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        }
+      ]
+    },
+    "pihak_tipe_posisi": {
+      "primary_key_indexes": [
+        "plant_pk_tipe_posisi"
+      ],
+      "primary_key_columns": [
+        "kode_tipe"
+      ],
+      "columns": [
+        {
+          "ordinal": 1,
+          "name": "kode_tipe",
+          "type": "nvarchar",
+          "max_length": 30,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 2,
+          "name": "keterangan",
+          "type": "ntext",
+          "max_length": 16,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 3,
+          "name": "titel",
+          "type": "ntext",
+          "max_length": 16,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 4,
+          "name": "kode_pemilik",
+          "type": "nvarchar",
+          "max_length": 60,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 5,
+          "name": "tunjangan",
+          "type": "numeric",
+          "max_length": 5,
+          "precision": 6,
+          "scale": 3,
+          "nullable": true,
+          "identity": false
+        }
+      ]
+    },
+    "posisi_histori": {
+      "primary_key_indexes": [
+        "plant_pk_posisi_histori"
+      ],
+      "primary_key_columns": [
+        "id_histori"
+      ],
+      "columns": [
+        {
+          "ordinal": 1,
+          "name": "id_histori",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 2,
+          "name": "id_poisisi",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 3,
+          "name": "kode_pihak",
+          "type": "nvarchar",
+          "max_length": 200,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 4,
+          "name": "from_date",
+          "type": "datetime",
+          "max_length": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 5,
+          "name": "thru_date",
+          "type": "datetime",
+          "max_length": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 6,
+          "name": "ph_komen",
+          "type": "ntext",
+          "max_length": 16,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        }
+      ]
+    },
+    "posisi_struktur": {
+      "primary_key_indexes": [
+        "plant_pk_posisi_struktur"
+      ],
+      "primary_key_columns": [
+        "id_struktur"
+      ],
+      "columns": [
+        {
+          "ordinal": 1,
+          "name": "id_struktur",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 2,
+          "name": "id_posisi",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 3,
+          "name": "posisi_tujuan",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 4,
+          "name": "from_date",
+          "type": "datetime",
+          "max_length": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 5,
+          "name": "thru_date",
+          "type": "datetime",
+          "max_length": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 6,
+          "name": "ps_komen",
+          "type": "ntext",
+          "max_length": 16,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 7,
+          "name": "primary_flag",
+          "type": "nvarchar",
+          "max_length": 2,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        }
+      ]
+    },
+    "posisi_tupoksi": {
+      "primary_key_indexes": [
+        "plant_pk_posisi_tupoksi"
+      ],
+      "primary_key_columns": [
+        "id_ptupoksi"
+      ],
+      "columns": [
+        {
+          "ordinal": 1,
+          "name": "id_ptupoksi",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 2,
+          "name": "id_posisi",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 3,
+          "name": "kode_tupoksi",
+          "type": "nvarchar",
+          "max_length": 30,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 4,
+          "name": "from_date",
+          "type": "datetime",
+          "max_length": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 5,
+          "name": "thru_date",
+          "type": "datetime",
+          "max_length": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 6,
+          "name": "ptu_komen",
+          "type": "ntext",
+          "max_length": 16,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        }
+      ]
+    },
+    "ref_code": {
+      "primary_key_indexes": [
+        "ref_code_pk"
+      ],
+      "primary_key_columns": [
+        "kode"
+      ],
+      "columns": [
+        {
+          "ordinal": 1,
+          "name": "kode",
+          "type": "numeric",
+          "max_length": 17,
+          "precision": 38,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 2,
+          "name": "istilah",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 3,
+          "name": "nama_error",
+          "type": "nvarchar",
+          "max_length": 200,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 4,
+          "name": "keterangan",
+          "type": "nvarchar",
+          "max_length": -1,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 5,
+          "name": "jenis",
+          "type": "nvarchar",
+          "max_length": 40,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        }
+      ]
+    },
+    "reposisi_pohon": {
+      "primary_key_indexes": [
+        "pk_riwayat_pindah"
+      ],
+      "primary_key_columns": [
+        "id_reposisi"
+      ],
+      "columns": [
+        {
+          "ordinal": 1,
+          "name": "id_reposisi",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 2,
+          "name": "id_tanaman",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 3,
+          "name": "pohon_awal",
+          "type": "int",
+          "max_length": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 4,
+          "name": "baris_awal",
+          "type": "int",
+          "max_length": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 5,
+          "name": "pohon_tujuan",
+          "type": "int",
+          "max_length": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 6,
+          "name": "baris_tujuan",
+          "type": "int",
+          "max_length": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 7,
+          "name": "keterangan",
+          "type": "nvarchar",
+          "max_length": 200,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 8,
+          "name": "petugas",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 9,
+          "name": "from_date",
+          "type": "datetime",
+          "max_length": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 10,
+          "name": "thru_date",
+          "type": "datetime",
+          "max_length": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 11,
+          "name": "tipe_riwayat",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 12,
+          "name": "blok",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        }
+      ]
+    },
+    "sop_referensi": {
+      "primary_key_indexes": [
+        "plant_pk_sop_referensi"
+      ],
+      "primary_key_columns": [
+        "id_sop"
+      ],
+      "columns": [
+        {
+          "ordinal": 1,
+          "name": "id_sop",
+          "type": "varchar",
+          "max_length": 20,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 2,
+          "name": "id_tipe_sop",
+          "type": "varchar",
+          "max_length": 10,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 3,
+          "name": "nama_sop",
+          "type": "varchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 4,
+          "name": "deskripsi",
+          "type": "text",
+          "max_length": 16,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 5,
+          "name": "created_at",
+          "type": "datetime",
+          "max_length": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 6,
+          "name": "updated_at",
+          "type": "datetime",
+          "max_length": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "identity": false
+        }
+      ]
+    },
+    "sop_referensi_versi": {
+      "primary_key_indexes": [
+        "plant_pk_sop_referensi_versi"
+      ],
+      "primary_key_columns": [
+        "id_sop_referensi_versi"
+      ],
+      "columns": [
+        {
+          "ordinal": 1,
+          "name": "id_sop_referensi_versi",
+          "type": "varchar",
+          "max_length": 15,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 2,
+          "name": "id_sop",
+          "type": "varchar",
+          "max_length": 20,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 3,
+          "name": "versi",
+          "type": "varchar",
+          "max_length": 10,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 4,
+          "name": "from_date",
+          "type": "date",
+          "max_length": 3,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 5,
+          "name": "thru_date",
+          "type": "date",
+          "max_length": 3,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 6,
+          "name": "dok_url",
+          "type": "varchar",
+          "max_length": 255,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 7,
+          "name": "catatan",
+          "type": "text",
+          "max_length": 16,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 8,
+          "name": "created_at",
+          "type": "datetime",
+          "max_length": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 9,
+          "name": "updated_at",
+          "type": "datetime",
+          "max_length": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "identity": false
+        }
+      ]
+    },
+    "sop_tipe": {
+      "primary_key_indexes": [
+        "plant_pk_sop_tipe"
+      ],
+      "primary_key_columns": [
+        "id_tipe_sop"
+      ],
+      "columns": [
+        {
+          "ordinal": 1,
+          "name": "id_tipe_sop",
+          "type": "varchar",
+          "max_length": 10,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 2,
+          "name": "nama_tipe_sop",
+          "type": "varchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 3,
+          "name": "deskripsi",
+          "type": "text",
+          "max_length": 16,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 4,
+          "name": "created_at",
+          "type": "datetime",
+          "max_length": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 5,
+          "name": "updated_at",
+          "type": "datetime",
+          "max_length": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "identity": false
+        }
+      ]
+    },
+    "sop_tipe_versi": {
+      "primary_key_indexes": [
+        "plant_pk_sop_tipe_versi"
+      ],
+      "primary_key_columns": [
+        "id_tipe_sop_versi"
+      ],
+      "columns": [
+        {
+          "ordinal": 1,
+          "name": "id_tipe_sop_versi",
+          "type": "varchar",
+          "max_length": 15,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 2,
+          "name": "id_tipe_sop",
+          "type": "varchar",
+          "max_length": 10,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 3,
+          "name": "versi",
+          "type": "varchar",
+          "max_length": 10,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 4,
+          "name": "tgl_versi",
+          "type": "date",
+          "max_length": 3,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 5,
+          "name": "from_date",
+          "type": "date",
+          "max_length": 3,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 6,
+          "name": "thru_date",
+          "type": "date",
+          "max_length": 3,
+          "precision": 10,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 7,
+          "name": "dok_url",
+          "type": "varchar",
+          "max_length": 255,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 8,
+          "name": "catatan",
+          "type": "text",
+          "max_length": 16,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 9,
+          "name": "created_at",
+          "type": "datetime",
+          "max_length": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 10,
+          "name": "updated_at",
+          "type": "datetime",
+          "max_length": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "identity": false
+        }
+      ]
+    },
+    "stand_per_row": {
+      "primary_key_indexes": [
+        "pk_stand_per_row"
+      ],
+      "primary_key_columns": [
+        "id_spr"
+      ],
+      "columns": [
+        {
+          "ordinal": 1,
+          "name": "id_spr",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 2,
+          "name": "blok",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 3,
+          "name": "nbaris",
+          "type": "int",
+          "max_length": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 4,
+          "name": "spr_awal",
+          "type": "int",
+          "max_length": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 5,
+          "name": "spr_akhir",
+          "type": "int",
+          "max_length": 4,
+          "precision": 10,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 6,
+          "name": "keterangan",
+          "type": "nvarchar",
+          "max_length": 200,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 7,
+          "name": "petugas",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 8,
+          "name": "from_date",
+          "type": "datetime",
+          "max_length": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 9,
+          "name": "thru_date",
+          "type": "datetime",
+          "max_length": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "identity": false
+        }
+      ]
+    },
+    "task_execution": {
+      "primary_key_indexes": [
+        "pk_plant_task_execution"
+      ],
+      "primary_key_columns": [
+        "execid"
+      ],
+      "columns": [
+        {
+          "ordinal": 1,
+          "name": "execid",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 2,
+          "name": "spk_number",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 3,
+          "name": "task_name",
+          "type": "nvarchar",
+          "max_length": 200,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 4,
+          "name": "task_state",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 5,
+          "name": "petugas",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 6,
+          "name": "task_date",
+          "type": "datetime",
+          "max_length": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 7,
+          "name": "keterangan",
+          "type": "nvarchar",
+          "max_length": 510,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 8,
+          "name": "img_file",
+          "type": "text",
+          "max_length": 16,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        }
+      ]
+    },
+    "tupoksi_tipe": {
+      "primary_key_indexes": [
+        "plant_pk_tipe_tupoksi"
+      ],
+      "primary_key_columns": [
+        "kode_tipe"
+      ],
+      "columns": [
+        {
+          "ordinal": 1,
+          "name": "kode_tipe",
+          "type": "nvarchar",
+          "max_length": 30,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 2,
+          "name": "keterangan",
+          "type": "ntext",
+          "max_length": 16,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        }
+      ]
+    },
+    "tupoksi_valid": {
+      "primary_key_indexes": [
+        "plant_pk_tupoksi_valid"
+      ],
+      "primary_key_columns": [
+        "id_tvalid"
+      ],
+      "columns": [
+        {
+          "ordinal": 1,
+          "name": "id_tvalid",
+          "type": "nvarchar",
+          "max_length": 100,
+          "precision": 0,
+          "scale": 0,
+          "nullable": false,
+          "identity": false
+        },
+        {
+          "ordinal": 2,
+          "name": "koed_posisi",
+          "type": "nvarchar",
+          "max_length": 30,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 3,
+          "name": "kode_tupoksi",
+          "type": "nvarchar",
+          "max_length": 30,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 4,
+          "name": "from_date",
+          "type": "datetime",
+          "max_length": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 5,
+          "name": "thru_date",
+          "type": "datetime",
+          "max_length": 8,
+          "precision": 23,
+          "scale": 3,
+          "nullable": true,
+          "identity": false
+        },
+        {
+          "ordinal": 6,
+          "name": "tval_komen",
+          "type": "ntext",
+          "max_length": 16,
+          "precision": 0,
+          "scale": 0,
+          "nullable": true,
+          "identity": false
+        }
+      ]
+    }
+  }
+}

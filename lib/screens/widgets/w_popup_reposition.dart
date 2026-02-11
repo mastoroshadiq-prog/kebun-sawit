@@ -1,6 +1,5 @@
 // screens/widgets/w_popup_action.dart
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:kebun_sawit/mvc_dao/dao_pohon.dart';
@@ -15,6 +14,7 @@ import 'w_general.dart';
 import '../../mvc_models/pohon.dart';
 import '../../mvc_services/geo_audit_service.dart';
 import '../../mvc_services/geo_photo_service.dart';
+import '../../mvc_services/photo_crypto_service.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -38,30 +38,25 @@ Future<ReposisiResult?> showPopup(
 }
 
 class _PopupPresetStore {
-  static const _kMode = 'popup_last_mode_v1';
-  static const _kLabel = 'popup_last_label_v1';
-  static const _kObservasi = 'popup_last_observasi_v1';
+  static const _kMode = 'popup_last_mode_v2';
+  static const _kLabel = 'popup_last_label_v2';
 
   Future<void> save({
     required _PopupMode mode,
     required String label,
-    required List<String> observasi,
   }) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_kMode, mode.name);
     await prefs.setString(_kLabel, label);
-    await prefs.setString(_kObservasi, jsonEncode(observasi));
   }
 
   Future<({
     _PopupMode? mode,
     String? label,
-    List<String> observasi,
   })> load() async {
     final prefs = await SharedPreferences.getInstance();
     final modeName = prefs.getString(_kMode);
     final label = prefs.getString(_kLabel);
-    final rawObservasi = prefs.getString(_kObservasi);
 
     _PopupMode? mode;
     for (final m in _PopupMode.values) {
@@ -71,15 +66,7 @@ class _PopupPresetStore {
       }
     }
 
-    List<String> observasi = const [];
-    if (rawObservasi != null && rawObservasi.isNotEmpty) {
-      final decoded = jsonDecode(rawObservasi);
-      if (decoded is List) {
-        observasi = decoded.map((e) => e.toString()).toList();
-      }
-    }
-
-    return (mode: mode, label: label, observasi: observasi);
+    return (mode: mode, label: label);
   }
 }
 
@@ -91,11 +78,13 @@ AlertDialog _buildPopupDialog(
   int pohonIndex, {
   bool? isVirtual,
 }) {
+  final screenWidth = MediaQuery.of(context).size.width;
+  final dialogWidth = (screenWidth * 0.9).clamp(380.0, 560.0);
   return AlertDialog(
     backgroundColor: Colors.white,
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
     // Atur batas tepi layar :
-    insetPadding: const EdgeInsets.symmetric(horizontal: 40),
+    insetPadding: const EdgeInsets.symmetric(horizontal: 16),
     title: Column(
       children: [
         _buildPopupTitle(
@@ -109,7 +98,7 @@ AlertDialog _buildPopupDialog(
     ),
     //content: _buildPopupContent(context, assignment),
     content: SizedBox(
-      width: 350, // 🔥 lebar dialog diatur di sini
+      width: dialogWidth,
       child: _buildPopupContent(
         context,
         pohon,
@@ -160,10 +149,10 @@ SingleChildScrollView _buildPopupContent(
 }) {
   final presetStore = _PopupPresetStore();
   _PopupMode selectedMode = _PopupMode.koreksi;
-  _TreeStatusOption? selectedOption;
-  final Set<String> selectedObservasi = <String>{};
-  final TextEditingController catatanController = TextEditingController();
+  _TreeStatusOption? selectedKoreksiOption;
+  _TreeStatusOption? selectedTemuanOption;
   XFile? photoFile;
+  String? encryptedPhotoPath;
 
   return SingleChildScrollView(
     child: StatefulBuilder(
@@ -180,7 +169,6 @@ SingleChildScrollView _buildPopupContent(
                   if (preset.mode != null) {
                     selectedMode = preset.mode!;
                   }
-                  selectedOption = null;
                   final options = _buildTreeStatusOptions(
                     selectedMode,
                     pohon,
@@ -191,15 +179,15 @@ SingleChildScrollView _buildPopupContent(
                   if (preset.label != null) {
                     for (final op in options) {
                       if (op.label == preset.label) {
-                        selectedOption = op;
+                        if (selectedMode == _PopupMode.koreksi) {
+                          selectedKoreksiOption = op;
+                        } else {
+                          selectedTemuanOption = op;
+                        }
                         break;
                       }
                     }
                   }
-
-                  selectedObservasi
-                    ..clear()
-                    ..addAll(preset.observasi);
                 });
               },
               icon: const Icon(Icons.history, size: 16),
@@ -213,19 +201,13 @@ SingleChildScrollView _buildPopupContent(
               ChoiceChip(
                 label: const Text('KOREKSI'),
                 selected: selectedMode == _PopupMode.koreksi,
-                onSelected: (_) => setState(() {
-                  selectedMode = _PopupMode.koreksi;
-                  selectedOption = null;
-                }),
+                onSelected: (_) => setState(() => selectedMode = _PopupMode.koreksi),
               ),
               const SizedBox(width: 10),
               ChoiceChip(
-                label: const Text('TEMUAN (G)'),
+                label: const Text('TEMUAN'),
                 selected: selectedMode == _PopupMode.temuan,
-                onSelected: (_) => setState(() {
-                  selectedMode = _PopupMode.temuan;
-                  selectedOption = null;
-                }),
+                onSelected: (_) => setState(() => selectedMode = _PopupMode.temuan),
               ),
             ],
           ),
@@ -244,98 +226,68 @@ SingleChildScrollView _buildPopupContent(
                     label: option.label,
                     iconPath: option.iconPath,
                     borderColor: option.borderColor,
-                    isSelected: selectedOption?.label == option.label,
-                    onTap: () => setState(() => selectedOption = option),
+                    isSelected: selectedMode == _PopupMode.koreksi
+                        ? selectedKoreksiOption?.label == option.label
+                        : selectedTemuanOption?.label == option.label,
+                    onTap: () => setState(() {
+                      if (selectedMode == _PopupMode.koreksi) {
+                        selectedKoreksiOption = option;
+                      } else {
+                        selectedTemuanOption = option;
+                      }
+                    }),
                   ),
                 )
                 .toList(),
           ),
-          if (selectedMode == _PopupMode.temuan) ...[
-            const SizedBox(height: 14),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Observasi Tambahan (Vegetatif):',
-                style: TextStyle(
-                  color: Colors.green.shade900,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 14,
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Wrap(
+          const SizedBox(height: 10),
+          Align(
+            alignment: Alignment.center,
+            child: Wrap(
+              alignment: WrapAlignment.center,
               spacing: 8,
-              runSpacing: 8,
-              children: _observasiVegetatifOptions.map((item) {
-                final selected = selectedObservasi.contains(item);
-                return FilterChip(
-                  label: Text(item),
-                  selected: selected,
-                  onSelected: (value) {
-                    setState(() {
-                      if (value) {
-                        selectedObservasi.add(item);
-                      } else {
-                        selectedObservasi.remove(item);
-                      }
-                    });
+              runSpacing: 6,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                OutlinedButton.icon(
+                  onPressed: () async {
+                    final picker = ImagePicker();
+                    final shot = await picker.pickImage(
+                      source: ImageSource.camera,
+                      imageQuality: 80,
+                      maxWidth: 1920,
+                    );
+                    if (!context.mounted) return;
+                    if (shot != null) {
+                      final encrypted = await PhotoCryptoService()
+                          .encryptFileAtRest(shot.path);
+                      setState(() {
+                        photoFile = shot;
+                        encryptedPhotoPath = encrypted;
+                      });
+                    }
                   },
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 8),
-            TextField(
-              controller: catatanController,
-              maxLines: 2,
-              decoration: const InputDecoration(
-                labelText: 'Catatan Observasi (opsional)',
-                border: OutlineInputBorder(),
-                isDense: true,
-              ),
-            ),
-            const SizedBox(height: 10),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Wrap(
-                spacing: 8,
-                runSpacing: 6,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: [
-                  OutlinedButton.icon(
-                    onPressed: () async {
-                      final picker = ImagePicker();
-                      final shot = await picker.pickImage(
-                        source: ImageSource.camera,
-                        imageQuality: 80,
-                        maxWidth: 1920,
-                      );
-                      if (!context.mounted) return;
-                      if (shot != null) {
-                        setState(() {
-                          photoFile = shot;
-                        });
-                      }
-                    },
-                    icon: const Icon(Icons.camera_alt_outlined, size: 18),
-                    label: const Text('Ambil Foto Temuan'),
-                  ),
-                  if (photoFile != null)
-                    Text(
-                      'Foto siap: ${photoFile!.name}',
-                      style: TextStyle(
-                        color: Colors.green.shade800,
-                        fontWeight: FontWeight.w600,
-                      ),
+                  icon: const Icon(Icons.camera_alt_outlined, size: 18),
+                  label: const Text('Ambil Foto (Opsional)'),
+                ),
+                if (photoFile != null)
+                  Text(
+                    'Foto siap: ${photoFile!.name}',
+                    style: TextStyle(
+                      color: Colors.green.shade800,
+                      fontWeight: FontWeight.w600,
                     ),
-                ],
-              ),
+                  ),
+              ],
             ),
-          ],
+          ),
           const SizedBox(height: 16),
-          if (selectedOption != null)
+          if (selectedKoreksiOption != null || selectedTemuanOption != null)
             Text(
-              'Pilihan: ${selectedOption!.label}',
+              'Pilihan: ${[
+                if (selectedKoreksiOption != null) selectedKoreksiOption!.label,
+                if (selectedTemuanOption != null) selectedTemuanOption!.label,
+              ].join(', ')}',
               style: TextStyle(
                 color: Colors.green.shade800,
                 fontWeight: FontWeight.w700,
@@ -364,20 +316,29 @@ SingleChildScrollView _buildPopupContent(
                   ),
                 ),
                 () async {
-                  if (selectedOption == null) {
+                  if (selectedKoreksiOption == null && selectedTemuanOption == null) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text('Pilih status terlebih dahulu.'),
+                        content: Text('Pilih minimal satu status.'),
                       ),
                     );
                     return;
                   }
 
+                  final activeOption = selectedMode == _PopupMode.koreksi
+                      ? selectedKoreksiOption
+                      : selectedTemuanOption;
+                  final primaryOption = selectedKoreksiOption ?? selectedTemuanOption!;
+                  final combinedLabels = <String>[
+                    if (selectedKoreksiOption != null) selectedKoreksiOption!.label,
+                    if (selectedTemuanOption != null) selectedTemuanOption!.label,
+                  ];
+
                   final confirm = await showDialog<bool>(
                     context: context,
                     builder: (dialogContext) => AlertDialog(
                       title: const Text('Konfirmasi Simpan'),
-                      content: Text('Yakin simpan perubahan "${selectedOption!.label}"?'),
+                      content: Text('Yakin simpan perubahan "${combinedLabels.join(', ')}"?'),
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.pop(dialogContext, false),
@@ -397,22 +358,19 @@ SingleChildScrollView _buildPopupContent(
 
                   await presetStore.save(
                     mode: selectedMode,
-                    label: selectedOption!.label,
-                    observasi: selectedObservasi.toList(),
+                    label: activeOption?.label ?? primaryOption.label,
                   );
 
                   final result = await _syncPlantReposition(
                     pohon.blok,
                     pohonIndex,
-                    selectedOption!.label,
+                    primaryOption.label,
                     pohon.objectId,
                     pohon.npohon,
                     pohon.nbaris,
                     petugas,
-                    selectedOption!.isVirtual,
-                    observasiLabels: selectedObservasi.toList(),
-                    observasiNote: catatanController.text.trim(),
-                    simpanObservasi: selectedMode == _PopupMode.temuan,
+                    primaryOption.isVirtual,
+                    attributeLabels: combinedLabels,
                   );
 
                   unawaited(
@@ -421,23 +379,23 @@ SingleChildScrollView _buildPopupContent(
                       blok: pohon.blok,
                       idTanaman: pohon.objectId,
                       idReposisi: result.idReposisi,
-                      actionLabel: selectedOption!.label,
+                      actionLabel: combinedLabels.join('+'),
                       rowNumber: pohon.nbaris,
                       treeNumber: pohon.npohon,
                     ),
                   );
 
-                  if (selectedMode == _PopupMode.temuan && photoFile != null) {
+                  if (photoFile != null) {
                     unawaited(
                       GeoPhotoService().captureAndQueuePhoto(
                         userId: petugas,
                         blok: pohon.blok,
                         idTanaman: pohon.objectId,
                         idReposisi: result.idReposisi,
-                        actionLabel: selectedOption!.label,
+                        actionLabel: combinedLabels.join('+'),
                         rowNumber: pohon.nbaris,
                         treeNumber: pohon.npohon,
-                        localPath: photoFile!.path,
+                        localPath: encryptedPhotoPath ?? photoFile!.path,
                       ),
                     );
                   }
@@ -493,6 +451,12 @@ List<_TreeStatusOption> _buildTreeStatusOptions(
         label: 'G',
         iconPath: 'assets/icons/infek-gano.png',
         borderColor: Colors.deepOrange,
+        isVirtual: isVirtual,
+      ),
+      _TreeStatusOption(
+        label: 'SISIPAN',
+        iconPath: 'assets/icons/palm.png',
+        borderColor: Colors.red,
         isVirtual: isVirtual,
       ),
     ];
@@ -571,7 +535,39 @@ Widget _buildSelectableTreeStatusButton({
                       ]
                     : null,
               ),
-              child: Center(child: cfgImageAsset(iconPath, 60, 60)),
+              child: Center(
+                child: label == 'SISIPAN'
+                    ? Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          cfgImageAsset('assets/icons/palm.png', 60, 60),
+                          Positioned(
+                            bottom: 4,
+                            right: 3,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 5,
+                                vertical: 1,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.red.shade600,
+                                borderRadius: BorderRadius.circular(9),
+                              ),
+                              child: const Text(
+                                'S',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w900,
+                                  height: 1,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
+                    : cfgImageAsset(iconPath, 60, 60),
+              ),
             ),
             const SizedBox(height: 10),
             resText(
@@ -615,6 +611,7 @@ Future<ReposisiResult> _syncPlantReposition(
   {List<String> observasiLabels = const <String>[],
   String observasiNote = '',
   bool simpanObservasi = false,
+  List<String> attributeLabels = const <String>[],
   }
 ) async {
   String pohonTujuan =
@@ -657,6 +654,34 @@ Future<ReposisiResult> _syncPlantReposition(
       tipeRiwayat = 'G';
       nFlag = '5';
       break;
+    case 'SISIPAN':
+      strKet = 'SISIPAN';
+      tipeRiwayat = 'S';
+      nFlag = '0';
+      break;
+  }
+
+  final hasGanoderma = attributeLabels.contains('G');
+  final hasSisipan = attributeLabels.contains('SISIPAN');
+
+  if (hasGanoderma) {
+    if (nFlag == '1') {
+      nFlag = '6'; // G + MIRING KANAN
+    } else if (nFlag == '2') {
+      nFlag = '7'; // G + MIRING KIRI
+    } else if (nFlag == '0') {
+      nFlag = '8'; // G + TEGAK/SISIPAN
+    } else if (nFlag != '5') {
+      nFlag = '5';
+    }
+  } else if (hasSisipan) {
+    if (nFlag == '1') {
+      nFlag = '10'; // SISIPAN + MIRING KANAN
+    } else if (nFlag == '2') {
+      nFlag = '11'; // SISIPAN + MIRING KIRI
+    } else if (nFlag == '0') {
+      nFlag = '12'; // SISIPAN + TEGAK
+    }
   }
 
   bool isHasil;
@@ -686,6 +711,26 @@ Future<ReposisiResult> _syncPlantReposition(
       "Berhasil Melakukan Reposisi Pohon ID: $idTanaman-$strKet",
     );
 
+    if (attributeLabels.isNotEmpty) {
+      final nowIsoAttr = DateTime.now().toIso8601String();
+      for (final item in attributeLabels.toSet()) {
+        final observasiAttr = ObservasiTambahan(
+          idObservasi: '${const Uuid().v4().toUpperCase()}-$blok',
+          idTanaman: idTanaman,
+          blok: blok,
+          baris: barisAwal,
+          pohon: pohonAwal,
+          kategori: 'ATRIBUT',
+          detail: item,
+          catatan: observasiNote,
+          petugas: strPetugas,
+          createdAt: nowIsoAttr,
+          flag: 0,
+        );
+        await ObservasiTambahanDao().insertObservasi(observasiAttr);
+      }
+    }
+
     if (simpanObservasi && observasiLabels.isNotEmpty) {
       final nowIso = DateTime.now().toIso8601String();
       for (final item in observasiLabels) {
@@ -712,7 +757,7 @@ Future<ReposisiResult> _syncPlantReposition(
     }
 
     if (isVirtual) {
-      if (['0', '3', '4', '5', '6', '7', '8'].contains(nFlag)) {
+      if (['0', '3', '4', '5', '6', '7', '8', '10', '11', '12'].contains(nFlag)) {
         final pohon = Pohon(
           blok: blok,
           nbaris: barisTujuan,
@@ -762,11 +807,3 @@ Future<ReposisiResult> _syncPlantReposition(
   );
 }
 
-const List<String> _observasiVegetatifOptions = [
-  'Kurang unsur hara',
-  'Kondisi gambut',
-  'Defisiensi air',
-  'Serangan hama',
-  'Indikasi penyakit daun',
-  'Pertumbuhan terhambat',
-];

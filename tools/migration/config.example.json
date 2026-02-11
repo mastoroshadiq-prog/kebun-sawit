@@ -1,0 +1,67 @@
+{
+  "sqlserver": {
+    "driver": "ODBC Driver 17 for SQL Server",
+    "host": "127.0.0.1",
+    "port": 1433,
+    "database": "YourSqlServerDb",
+    "username": "sa",
+    "password": "your_sqlserver_password",
+    "trust_server_certificate": "yes"
+  },
+  "supabase_postgres": {
+    "host": "db.xxxxxxxxxxxxx.supabase.co",
+    "port": 5432,
+    "database": "postgres",
+    "username": "postgres",
+    "password": "your_supabase_db_password",
+    "sslmode": "require"
+  },
+  "auto_tables": {
+    "enabled": true,
+    "include_schemas": ["dbo", "apk"],
+    "schema_mapping": {
+      "dbo": "dbo",
+      "apk": "apk"
+    },
+    "truncate_first": false
+  },
+  "views": {
+    "enabled": false,
+    "include_schemas": ["dbo", "apk"],
+    "schema_mapping": {
+      "dbo": "dbo",
+      "apk": "apk"
+    },
+    "strict_dependency_check": true,
+    "missing_dependency_report": "tools/migration/view_missing_dependencies.json",
+    "sql_replacements": [
+      {
+        "from": "c.nama_sub AS nama_task",
+        "to": "c.nama_sub_tindakan AS nama_task"
+      }
+    ]
+  },
+  "tables": [
+    {
+      "source_schema": "dbo",
+      "source_table": "petugas",
+      "target_schema": "public",
+      "target_table": "petugas",
+      "truncate_first": false
+    },
+    {
+      "source_schema": "dbo",
+      "source_table": "reposisi",
+      "target_schema": "public",
+      "target_table": "reposisi",
+      "truncate_first": false,
+      "column_mapping": {
+        "idReposisi": "id_reposisi",
+        "idTanaman": "id_tanaman",
+        "pohonAwal": "pohon_awal",
+        "barisAwal": "baris_awal"
+      }
+    }
+  ]
+}
+

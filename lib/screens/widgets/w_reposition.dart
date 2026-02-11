@@ -351,6 +351,12 @@ Widget _buildTreeButton(
   //String labelPohon = nomor.toString();
   String labelPohon = '${pohonIndex + 1}/${nomor.toString()}';
   String iconPath = 'assets/icons/normal.png';
+  String? overlayIconPath;
+  String? overlayText;
+  Color overlayBorderColor = Colors.red;
+  Color overlayTextBadgeColor = Colors.black;
+  double overlayIconSize = 30;
+  double overlayBadgeSize = 44;
   Color color = Colors.green.shade50; // default
   Color borderColor = Colors.green.shade400;
 
@@ -369,15 +375,54 @@ Widget _buildTreeButton(
     color = Colors.red.shade50;
     borderColor = Colors.red.shade500;
   } else if (pohon.nflag == '6') {
-    iconPath = 'assets/icons/infek-gano.png';
+    iconPath = 'assets/icons/miring-kanan.png';
+    overlayIconPath = 'assets/icons/infek-gano.png';
+    overlayText = null;
+    overlayBorderColor = Colors.red.shade500;
     color = Colors.red.shade50;
     borderColor = Colors.red.shade500;
   } else if (pohon.nflag == '7') {
-    iconPath = 'assets/icons/infek-gano.png';
+    iconPath = 'assets/icons/miring-kiri.png';
+    overlayIconPath = 'assets/icons/infek-gano.png';
+    overlayText = null;
+    overlayBorderColor = Colors.red.shade500;
     color = Colors.red.shade50;
     borderColor = Colors.red.shade500;
   } else if (pohon.nflag == '8') {
-    iconPath = 'assets/icons/infek-gano.png';
+    iconPath = 'assets/icons/normal.png';
+    overlayIconPath = 'assets/icons/infek-gano.png';
+    overlayText = null;
+    overlayBorderColor = Colors.red.shade500;
+    color = Colors.red.shade50;
+    borderColor = Colors.red.shade500;
+  } else if (pohon.nflag == '10') {
+    iconPath = 'assets/icons/miring-kanan.png';
+    overlayIconPath = 'assets/icons/palm.png';
+    overlayText = 'S';
+    overlayBorderColor = Colors.red.shade500;
+    overlayTextBadgeColor = Colors.red.shade600;
+    overlayIconSize = 34;
+    overlayBadgeSize = 52;
+    color = Colors.red.shade50;
+    borderColor = Colors.red.shade500;
+  } else if (pohon.nflag == '11') {
+    iconPath = 'assets/icons/miring-kiri.png';
+    overlayIconPath = 'assets/icons/palm.png';
+    overlayText = 'S';
+    overlayBorderColor = Colors.red.shade500;
+    overlayTextBadgeColor = Colors.red.shade600;
+    overlayIconSize = 34;
+    overlayBadgeSize = 52;
+    color = Colors.red.shade50;
+    borderColor = Colors.red.shade500;
+  } else if (pohon.nflag == '12') {
+    iconPath = 'assets/icons/normal.png';
+    overlayIconPath = 'assets/icons/palm.png';
+    overlayText = 'S';
+    overlayBorderColor = Colors.red.shade500;
+    overlayTextBadgeColor = Colors.red.shade600;
+    overlayIconSize = 34;
+    overlayBadgeSize = 52;
     color = Colors.red.shade50;
     borderColor = Colors.red.shade500;
   } else if (pohon.nflag == '9') {
@@ -415,7 +460,53 @@ Widget _buildTreeButton(
               color: color,
               border: Border.all(color: borderColor, width: 3),
             ),
-            child: Center(child: cfgImageAsset(iconPath, iconSize, iconSize)),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Center(child: cfgImageAsset(iconPath, iconSize, iconSize)),
+                if (overlayIconPath != null)
+                  Positioned(
+                    left: 2,
+                    top: 4,
+                    child: Container(
+                      width: overlayBadgeSize,
+                      height: overlayBadgeSize,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white,
+                        border: Border.all(color: overlayBorderColor, width: 2),
+                      ),
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Center(child: cfgImageAsset(overlayIconPath, overlayIconSize, overlayIconSize)),
+                          if (overlayText != null)
+                            Positioned(
+                              bottom: 1,
+                              right: 2,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                                decoration: BoxDecoration(
+                                  color: overlayTextBadgeColor.withValues(alpha: 0.9),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text(
+                                  overlayText,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.w900,
+                                    height: 1,
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+              ],
+            ),
           ),
           const SizedBox(height: 0),
           resText(

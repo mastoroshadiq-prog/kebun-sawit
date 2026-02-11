@@ -12,6 +12,7 @@ import 'package:uuid/uuid.dart';
 import '../mvc_dao/dao_assignment.dart';
 import '../mvc_dao/dao_petugas.dart';
 import '../mvc_models/geo_photo_event.dart';
+import 'photo_crypto_service.dart';
 
 class GeoPhotoService {
   GeoPhotoService._();
@@ -167,6 +168,9 @@ class GeoPhotoService {
         '$normalizedBase/storage/v1/object/$_bucketName/$objectPath',
       );
       final bytes = await file.readAsBytes();
+      final payload = event.localPath.endsWith('.enc')
+          ? await PhotoCryptoService().decryptFileToBytes(event.localPath)
+          : bytes;
 
       final res = await http.post(
         url,
@@ -176,7 +180,7 @@ class GeoPhotoService {
           'Content-Type': 'image/jpeg',
           'x-upsert': 'true',
         },
-        body: bytes,
+        body: payload,
       );
 
       final ok = res.statusCode >= 200 && res.statusCode < 300;
